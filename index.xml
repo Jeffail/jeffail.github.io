@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jeffail</title>
+    <link>//jeffs.eu/</link>
+    <description>Recent content on Jeffail</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sat, 09 Dec 2017 13:48:00 +0000</lastBuildDate>
+    
+	<atom:link href="//jeffs.eu/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Bland Platforms: Message Reliability</title>
+      <link>//jeffs.eu/post/bland-platforms-message-reliability/</link>
+      <pubDate>Sat, 09 Dec 2017 13:48:00 +0000</pubDate>
+      
+      <guid>//jeffs.eu/post/bland-platforms-message-reliability/</guid>
+      <description>I like bland platforms capable of going about their lives without ever getting me involved, like a good friend. Part of building a bland platform is making sure the messaging transports are incident free. I can&amp;rsquo;t hold eye contact with my scrum master, but that doesn&amp;rsquo;t mean my platform designs should also have communication issues. This blog is an exploration into identifying and mitigating potential flaws in a platform architecture with respect to message transports.</description>
+    </item>
+    
+    <item>
+      <title>Intro to Benthos</title>
+      <link>//jeffs.eu/post/intro-to-benthos/</link>
+      <pubDate>Mon, 17 Oct 2016 20:09:45 +0100</pubDate>
+      
+      <guid>//jeffs.eu/post/intro-to-benthos/</guid>
+      <description>Benthos is a persistent data streaming service, capable of connecting with a range of messaging protocols as a bridge. Protocols include Kafka, ZeroMQ, AMQP (RabbitMQ), Scalability Protocols (Nanomsg), File, HTTP 1.1 and stdin/stdout. The persistent buffer is optional, and uses memory-mapped files as a low-latency solution.
+For more information on getting Benthos and general usage check out the github page. If you intend to run the examples in this blog then you should grab a binary before continuing.</description>
+    </item>
+    
+    <item>
+      <title>FOSS: What Will The Community Do To Me?</title>
+      <link>//jeffs.eu/post/foss-guide/</link>
+      <pubDate>Fri, 07 Oct 2016 19:17:00 +0000</pubDate>
+      
+      <guid>//jeffs.eu/post/foss-guide/</guid>
+      <description>Open source is a great way to mildly annoy Hacker News, but sometimes accidentally gives value to someone. With permission from my work here is an edited version of a FOSS guide I wrote. You will find an overview of what to expect from open sourcing your projects, along with some good practices. This was originally intended for teams, but mostly also applies for individuals and hobby projects.
+Most of the advice here will be common sense, as they are good practices in general.</description>
+    </item>
+    
+    <item>
+      <title>Golang service configuration</title>
+      <link>//jeffs.eu/post/golang-config/</link>
+      <pubDate>Wed, 07 Jan 2015 12:00:00 +0000</pubDate>
+      
+      <guid>//jeffs.eu/post/golang-config/</guid>
+      <description>&lt;p&gt;Rob Pike wrote an interesting blog about API options, it can be found &lt;a href=&#34;http://commandcenter.blogspot.nl/2014/01/self-referential-functions-and-design.html&#34;&gt;here&lt;/a&gt;. It&amp;rsquo;s worth a read, but the summary is that it&amp;rsquo;s a damn fine idea to design options as a variadic argument of configuring functors.&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Teaching teens to tech</title>
+      <link>//jeffs.eu/post/teaching-teens/</link>
+      <pubDate>Mon, 28 Apr 2014 12:00:00 +0000</pubDate>
+      
+      <guid>//jeffs.eu/post/teaching-teens/</guid>
+      <description>&lt;p&gt;Teenagers are pretty much all losers. Teaching them how to write software is a mere drop in their vast ocean of ignorance, but it is a noble cause that works well to remind us real people that we are better than they are because we can do cool stuff that they cannot.&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

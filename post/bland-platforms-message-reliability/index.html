@@ -1,0 +1,335 @@
+    <!DOCTYPE html>
+<html lang="en-gb">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Ashley Jeffs">
+		<meta name="description" content="This is where I post my junk">
+		<meta name="generator" content="Hugo 0.33-DEV" />
+		<title>Bland Platforms: Message Reliability &middot; Jeffail</title>
+		<link rel="shortcut icon" href="//jeffs.eu/images/favicon.ico">
+		<link rel="stylesheet" href="//jeffs.eu/css/style.css">
+		<link rel="stylesheet" href="//jeffs.eu/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="//jeffs.eu/css/font-awesome.min.css">
+		
+
+		
+		<link href="//jeffs.eu/index.xml" rel="alternate" type="application/rss+xml" title="Jeffail" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='//jeffs.eu/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='//jeffs.eu/post'>Archive</a>
+	
+	<a href='//jeffs.eu/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="//jeffs.eu/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Bland Platforms: Message Reliability
+                    </h1>
+                    <h2 class="headline">
+                    Dec 9, 2017 13:48
+                    · 1604 words
+                    · 8 minutes read
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>I like bland platforms capable of going about their lives without ever getting
+me involved, like a good friend. Part of building a bland platform is making
+sure the messaging transports are incident free. I can&rsquo;t hold eye contact with
+my scrum master, but that doesn&rsquo;t mean my platform designs should also have
+communication issues. This blog is an exploration into identifying and
+mitigating potential flaws in a platform architecture with respect to message
+transports.</p>
+
+<h2 id="the-payload">The Payload</h2>
+
+<p><img src="/images/bland-platforms/different-payloads.png" alt="different payloads" /></p>
+
+<p>It all starts with the payload. They are special creatures, each with their own
+personality, and no two are ever the same (unless they are). Understanding the
+payloads and their purpose should be the first step in approaching a platforms&rsquo;
+messaging architecture.</p>
+
+<p>For each journey a payload might take, it is useful to know what kind of
+adventure that payload ought to have by answering some simple questions.</p>
+
+<h4 id="how-many-payloads-can-be-sacrificed-without-incident">How many payloads can be sacrificed without incident?</h4>
+
+<p>Data loss may or may not impact a system, and to varying degrees. If the hourly
+text I send to myself &ldquo;you&rsquo;re cool, keep it up&rdquo; was dropped 10% of the time, it
+would only have a minor impact on my day. In contrast, I need to guarantee 100%
+of my outbound hate mail successfully reaches the bin or I&rsquo;m in trouble.</p>
+
+<h4 id="would-a-duplicate-ever-cause-an-incident">Would a duplicate ever cause an incident?</h4>
+
+<p>Duplicates can appear in lots of ways and designing platforms that never
+duplicate requires special consideration. Alternatively, detecting and removing
+duplicates <a href="https://www.google.co.uk/search?q=deduping">is also easy when planned for</a>. Knowing if
+duplicates are a problem before starting a design will avoid headaches later on.</p>
+
+<h2 id="qos-choosing-duplicates-or-drops">QoS: Choosing Duplicates or Drops</h2>
+
+<p>No one is perfect (yikes) and neither is a typical messaging protocol. They can
+only ever guarantee either zero duplicates - called At Most Once (AMO) - or zero
+dropped messages - called At Least Once (ALO).</p>
+
+<p>These limitations are like grandpa&rsquo;s awkward outbursts, they usually won&rsquo;t be
+witnessed until a family gathering where tensions are already high. Both ALO and
+AMO protocols usually appear to be &ldquo;exactly once&rdquo; until the platform hits a
+spike of traffic or services need restarting, etc, which is when problems
+suddenly manifest.</p>
+
+<p>Life can be made easier by picking one guarantee per transport and, if needed,
+designing an automated solution around the chosen limitation. It should already
+be known whether dupes or drops are bad. If both are bad it is best to choose
+ALO and use <a href="https://www.google.co.uk/search?q=deduping">some form of deduping</a> since drops are much harder
+to automatically recover. If neither is a problem then just do whatever is most
+fun.</p>
+
+<p>Some protocols may claim to be &ldquo;exactly once&rdquo;. They should be treated as similar
+to &ldquo;absolutely secure&rdquo; software - be skeptical and protect against potential
+shortcomings anyway.</p>
+
+<h3 id="at-most-once">At Most Once</h3>
+
+<p>At Most Once describes a protocol that simply fires a message into the TCP
+buffer and hopes that it reaches the final destination. These protocols aren&rsquo;t
+usually entirely blind and will often at least guarantee that a consumer exists
+before firing. They will not, however, resend messages under any circumstances
+unless a duplicate is sent manually.</p>
+
+<p><img src="/images/bland-platforms/at-most-once.png" alt="at most once" /></p>
+
+<p>AMO protocols have a number of advantages. Throughput can be relatively higher
+and latency can be relatively lower. Duplicates can&rsquo;t spontaneously arise from
+the protocol. Transports are mostly stateless (data is either moving or not),
+which can make understanding and debugging a platform easier.</p>
+
+<p>If a platform is able to tolerate a margin of loss then it is worth considering
+AMO, especially if duplicates would be an issue.</p>
+
+<p>Some examples of higher level (not just TCP/UDP) protocols/queues that support
+AMO: <a href="http://nanomsg.org/">Nanomsg</a>, <a href="http://zeromq.org/">ZMQ</a>, <a href="http://www.rabbitmq.com/">RabbitMQ</a>, <a href="http://nats.io/">NATS</a>.</p>
+
+<p>It&rsquo;s possible to use transports such as HTTP as AMO by simply ignoring the
+response codes. However, it should be noted that adding proxies and caches
+between services might introduce request retries, which would be no longer be
+AMO.</p>
+
+<h3 id="at-least-once">At Least Once</h3>
+
+<p>At Least Once describes a messaging protocol which verifies that a client has
+consumed a message before discarding it locally. If something were to go wrong
+during the transport (service crashes, network failure) these protocols will
+make sure the message is re-sent until it is acknowledged. Therefore, if a
+message is successfully consumed by a client but the acknowledgement is lost,
+the protocol will create a duplicate message.</p>
+
+<p>Complaints from my mother are At Least Once, they will be resent until
+acknowledged.</p>
+
+<p><img src="/images/bland-platforms/at-least-once.png" alt="at least once" /></p>
+
+<p>ALO protocols may sound slow due to the nature of their guarantees. However, the
+trade off in latency and throughput is very often negligible for most purposes.
+Being more relaxed about duplicates can sometimes speed up these protocols as
+they can benefit from batch sending and verification, the risk being a higher
+likelihood of duplicates.</p>
+
+<p>In my opinion, in order for ALO protocols to be considered &lsquo;complete&rsquo; they ought
+to have the capability of persistently storing messages themselves until
+acknowledgement. Be aware of protocols that claim ALO but do not have persistent
+storage, as that makes your code the persister. If message delivery guarantees
+are needed then an ALO protocol is a great foundation to build a robust system
+on.</p>
+
+<p>Some examples of &lsquo;complete&rsquo; protocols/queues that support ALO: <a href="https://kafka.apache.org/">Kafka</a>,
+<a href="http://www.rabbitmq.com/">RabbitMQ</a>, <a href="http://nats.io/documentation/streaming/nats-streaming-intro/">NATS Stream</a>.</p>
+
+<p>If you are comfortable implementing your own persistent store for buffering
+unacknowledged messages then it&rsquo;s also possible to use <a href="http://nanomsg.org/">Nanomsg</a> or
+<a href="http://zeromq.org/">ZMQ</a> with request/reply sockets, just keep retrying messages until you
+receive back an agreed upon form of acknowledgement.</p>
+
+<p>HTTP (and RPC protocols) also get an honorable mention here for the same
+reasons. However, just like with AMO you should be extra conscious of proxies or
+caches used as they can fuzz the concept of acknowledgement.</p>
+
+<h3 id="why-it-matters">Why It Matters</h3>
+
+<p>Monitoring, tracking and fixing the source of unwanted duplicates or message
+drops can be a huge time sink that is entirely avoidable. It is always worth
+doing the research beforehand.</p>
+
+<p>Like with messaging protocols, it&rsquo;s worth considering platform components as
+either AMO or ALO and being strict about it. An ALO service using AMO protocols
+is capable of both dropping messages <em>and</em> duplicating them (the same is true in
+reverse). Having both drops and dupes is much harder to mitigate through design
+than one or the other.</p>
+
+<h3 id="building-amo-services">Building AMO Services</h3>
+
+<p>Building services that behave as AMO is fairly easy with the right mindset, just
+do everything lazily and it will naturally be AMO. Inputs can be entirely
+decoupled from outputs, making parallel processing easy.</p>
+
+<p><img src="/images/bland-platforms/parallel-with-amo.png" alt="parallel AMO" /></p>
+
+<h3 id="building-alo-services">Building ALO Services</h3>
+
+<p>ALO is slightly harder since an input message should only be acknowledged when
+it is either permanently stored somewhere or has been acknowledged by the
+output. Having inputs and outputs coupled so tightly means parallel or async
+processing has to be more strategic, but there are many ways of doing this.</p>
+
+<p>If a message protocol allows a client to acknowledge messages in any order then
+the solution is simple. Process each message in any fashion and the exit points
+in the application hold responsibility for calling the acknowledgement. Be
+careful that the message host is configured to automatically resend
+unacknowledged messages after a reasonable period of time.</p>
+
+<p><img src="/images/bland-platforms/parallel-with-async-acks.png" alt="parallel with async acks" /></p>
+
+<p>However, if the message protocol only supports consumers with a single, ordered
+acknowledgement (Kafka consumer group offsets, for example) then create a
+consumer per processing thread. With Kafka as an example it is possible to use
+<a href="https://kafka.apache.org/documentation.html#impl_consumerrebalance">partition balancing</a> to evenly and dynamically
+distribute partitions across a consumer group per thread.</p>
+
+<p><img src="/images/bland-platforms/parallel-with-multiple-readers.png" alt="parallel with multiple readers" /></p>
+
+<p>Obviously there are many ways of doing this sort of thing. Keeping plans simple
+and plotting the journey of messages under all potential circumstances will help
+keep services robust.</p>
+
+<h2 id="ordering">Ordering</h2>
+
+<p><img src="/images/bland-platforms/ordering.png" alt="ordering" /></p>
+
+<p>It is often important that messages sent in a stream are consumed in a certain
+order. However, messaging protocols have many ways of screwing up order.
+Introducing parallel consumers for scaling purposes will also add even more
+opportunities for race conditions and order shuffling to occur.</p>
+
+<p>All efforts should be made to design a system where the strict ordering of
+payloads in a message transport isn&rsquo;t relied upon. A system will be more
+flexible and resilient if messages can be scattered freely amongst processing
+components without consequence.</p>
+
+<p>However, it <em>is</em> possible to build a platform with ordered streams and multiple
+consumers. Messages sent through Kafka can be distributed across multiple
+partitions in a topic, where each partition will have preserved ordering.
+Consumers can then be allocated a subset of partitions to process. Messages must
+be partitioned in a way that isolates race conditions.</p>
+
+<p>For example, if messages are user actions that must be performed in a strict
+order, then the partition scheme should ensure that all actions of a user will
+end up in the same partition. The number of partitions should also be set
+significantly greater than the number of parallel consumers, as the higher the
+partition count the more evenly the messages can be distributed.</p>
+
+<p>The parallel readers in the previous example can be looked at from the
+perspective of message ordering:</p>
+
+<p><img src="/images/bland-platforms/ordering-with-multiple-readers.png" alt="ordering with multiple readers" /></p>
+
+<p>This isn&rsquo;t an ideal way of distributing work amongst consumers, as partition
+balancing might be volatile both in raw volume and processing time for the
+streams, resulting in overworked consumers. Imagine if the messages in
+partition 0 take on average twice as much time to process as the messages in
+partition 3, leaving you with an uneven distribution of work.</p>
+
+<h2 id="final-words">Final Words</h2>
+
+<p>Building a bland platform is about trying to choose a compromise of features and
+guarantees that offers the best balance of stability, performance and
+simplicity. In order to do that it&rsquo;s crucial that the compromises made and the
+impact they will have are fully understood.</p>
+
+<p>Messaging is a critical component of platforms that also ties into other
+important aspects such as retention, distribution, etc. The next task will be to
+look at those.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="ash.jeffs@gmail.com">
+        <i class="fa fa-email"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.github.com/jeffail">
+        <i class="fa fa-github"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/jeffail">
+        <i class="fa fa-twitter"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//jeffs.eu/js/jquery-2.2.4.min.js"></script>
+<script src="//jeffs.eu/js/main.js"></script>
+<script src="//jeffs.eu/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+    </body>
+</html>

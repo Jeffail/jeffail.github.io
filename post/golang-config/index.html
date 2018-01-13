@@ -1,0 +1,234 @@
+    <!DOCTYPE html>
+<html lang="en-gb">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Ashley Jeffs">
+		<meta name="description" content="This is where I post my junk">
+		<meta name="generator" content="Hugo 0.33-DEV" />
+		<title>Golang service configuration &middot; Jeffail</title>
+		<link rel="shortcut icon" href="//jeffs.eu/images/favicon.ico">
+		<link rel="stylesheet" href="//jeffs.eu/css/style.css">
+		<link rel="stylesheet" href="//jeffs.eu/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="//jeffs.eu/css/font-awesome.min.css">
+		
+
+		
+		<link href="//jeffs.eu/index.xml" rel="alternate" type="application/rss+xml" title="Jeffail" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='//jeffs.eu/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='//jeffs.eu/post'>Archive</a>
+	
+	<a href='//jeffs.eu/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="//jeffs.eu/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Golang service configuration
+                    </h1>
+                    <h2 class="headline">
+                    Jan 7, 2015 12:00
+                    · 767 words
+                    · 4 minutes read
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    <p>Rob Pike wrote an interesting blog about API options, it can be found <a href="http://commandcenter.blogspot.nl/2014/01/self-referential-functions-and-design.html">here</a>. It&rsquo;s worth a read, but the summary is that it&rsquo;s a damn fine idea to design options as a variadic argument of configuring functors.</p>
+
+<p></p>
+
+<p>Dave Cheney presented a nice summary of the pros and cons of this versus other approaches (can be read <a href="http://dave.cheney.net/tag/functional-options">here</a>), and a nice example he gave of what it might look like is this:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> NewServer(addr <span style="color:#902000">string</span>, options <span style="color:#666">...</span><span style="color:#007020;font-weight:bold">func</span>(<span style="color:#666">*</span>Server)) (<span style="color:#666">*</span>Server, <span style="color:#902000">error</span>)
+
+<span style="color:#007020;font-weight:bold">func</span> main() {
+	src, _ <span style="color:#666">:=</span> NewServer(<span style="color:#4070a0">&#34;localhost&#34;</span>) <span style="color:#60a0b0;font-style:italic">// defaults
+</span><span style="color:#60a0b0;font-style:italic"></span>
+	timeout <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">func</span>(srv <span style="color:#666">*</span>Server) {
+		srv.timeout = <span style="color:#40a070">60</span> <span style="color:#666">*</span> time.Second
+	}
+
+	tls <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">func</span>(srv <span style="color:#666">*</span>Server) {
+		config <span style="color:#666">:=</span> loadTLSConfig()
+		srv.listener = tls.NewListener(srv.listener, <span style="color:#666">&amp;</span>config)
+	}
+
+	<span style="color:#60a0b0;font-style:italic">// listen securely with a 60 second timeout
+</span><span style="color:#60a0b0;font-style:italic"></span>	src2, _ <span style="color:#666">:=</span> NewServer(<span style="color:#4070a0">&#34;localhost&#34;</span>, timeout, tls)
+}</code></pre></div>
+<p>This pattern gives users of an API a simple syntax for expressing function options, but simultaneously allows the author of the API to dodge the problem of ambiguous zero values vs defaults, and also the ability to expand options without regression.</p>
+
+<p>I love this methodology, but whilst working on web services I&rsquo;ve been thinking a lot about configuration. When building a service it&rsquo;s nice to treat various modular components as an API in itself, but the options for these components often match 1:1 with service configuration values. I therefore wanted to try and merge the two concepts to avoid duplication, this added the following requirements to my options solution:</p>
+
+<ul>
+<li>Individual component options can be aggregated into a single construct</li>
+<li>Easy to serialize/de-serialize all-encompassing construct</li>
+</ul>
+
+<p>The first requirement is self explanatory. I want to define my options once and at the component level, but I want to treat my overall system configuration as one unit.</p>
+
+<p>The second requirement includes de-serialization, which is easy to justify since we need to be able to read our configuration. Serialization will also give us a way of self documenting all configuration options at run time, allowing us to print our values before reading a configuration file (to show defaults) or afterwards to reveal any mistakes in a users config file.</p>
+
+<p>Both of these requirements are easily satisfied with struct based options, but, as Dave Cheney rightfully pointed out, they carry issues of comparing intentional values vs zero values (is an empty string indicating the user wants the default option?) and the API usage can become long winded for the most simple use case (all default values).</p>
+
+<p>My solution isn&rsquo;t well suited for writing libraries, but for services I solved this problem by adding a function definition to every component that has an options struct, which returns an options object fully populated with default values.</p>
+
+<p>To use a component you now generate a default options object, modify any fields of interest and then pass it on. The code looks like this:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">fooOptions <span style="color:#666">:=</span> foo.NewOptions()
+fooOptions.Thing = <span style="color:#4070a0">&#34;hello&#34;</span>
+fooOptions.Bar.Baz = <span style="color:#40a070">500</span>
+
+bar <span style="color:#666">:=</span> foo.New(fooOptions)
+
+<span style="color:#60a0b0;font-style:italic">// When using only default values:
+</span><span style="color:#60a0b0;font-style:italic"></span>
+bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></div>
+<p>Defining our Foo looks like this:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#60a0b0;font-style:italic">// Options - options for our foo
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">type</span> Options {
+	Thing      <span style="color:#902000">string</span>      <span style="color:#4070a0">`json:&#34;thing&#34;`</span>
+	OtherThing <span style="color:#902000">string</span>      <span style="color:#4070a0">`json:&#34;thing&#34;`</span>
+	Bar        bar.Options <span style="color:#4070a0">`json:&#34;bar&#34;`</span>
+}
+
+<span style="color:#60a0b0;font-style:italic">// NewOptions - returns a new options object with default values
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> NewOptions() Options {
+	<span style="color:#007020;font-weight:bold">return</span> Options{
+		Thing:      <span style="color:#4070a0">&#34;wat&#34;</span>,
+		OtherThing: <span style="color:#4070a0">&#34;don&#39;t change me plz&#34;</span>,
+		Bar:        bar.NewOptions(),
+	}
+}
+
+<span style="color:#60a0b0;font-style:italic">// A foo
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">type</span> Foo <span style="color:#007020;font-weight:bold">struct</span> {
+	options Options
+	bar     <span style="color:#666">*</span>Bar
+}
+
+<span style="color:#60a0b0;font-style:italic">// Creates a new foo
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> New(options Options) <span style="color:#666">*</span>Foo {
+	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">&amp;</span>Foo{
+		options: options,
+		bar:     bar.New(options.Bar),
+	}
+}</code></pre></div>
+<p>Take note that since we&rsquo;re using structs we can easily nest options within the options of a parent object, this hierarchy also gives you the ability to intuitively separate options for an object type based on its lineage (you might have two SQL CRUD objects for two different areas of your code base for example).</p>
+
+<p>This adds one extra step to defining your options, but solves our problem. Your main function for your service might look like this:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">type</span> serviceOptions <span style="color:#007020;font-weight:bold">struct</span> {
+	ThingOne   foo.Options <span style="color:#4070a0">`json:&#34;thing_one&#34;`</span>
+	ThingTwo   yaz.Options <span style="color:#4070a0">`json:&#34;thing_two&#34;`</span>
+	ThingThree jup.Options <span style="color:#4070a0">`json:&#34;thing_three&#34;`</span>
+}
+
+<span style="color:#007020;font-weight:bold">func</span> newServiceOptions() serviceOptions {
+	<span style="color:#007020;font-weight:bold">return</span> serviceOptions{
+		ThingOne:   foo.NewOptions(),
+		ThingTwo:   yaz.NewOptions(),
+		ThingThree: jup.NewOptions(),
+	}
+}
+
+<span style="color:#007020;font-weight:bold">func</span> main() {
+	options <span style="color:#666">:=</span> newServiceOptions()
+
+	<span style="color:#60a0b0;font-style:italic">// ... read some cmd flags ...
+</span><span style="color:#60a0b0;font-style:italic"></span>
+	<span style="color:#007020;font-weight:bold">if</span> readConfig {
+		readConfigFile(<span style="color:#666">&amp;</span>options)
+	}
+	<span style="color:#007020;font-weight:bold">if</span> printConfig {
+		printConfigFile(options)
+	}
+
+	c1 <span style="color:#666">:=</span> componentOne(options.ThingOne)
+	c2 <span style="color:#666">:=</span> componentTwo(options.ThingTwo)
+	c3 <span style="color:#666">:=</span> componentThree(options.ThingThree)
+
+	<span style="color:#007020;font-weight:bold">go</span> c1.Run()
+	<span style="color:#007020;font-weight:bold">go</span> c2.Run()
+
+	c3.Run()
+}</code></pre></div>
+<p>This solution falls short in that it isn&rsquo;t intuitive to someone picking up a library for the first time, as a natural assumption from the method signature is to use <code>bar := foo.New(foo.Options{})</code>, which is why I would only recommend this for use inside of services where it can be mandated as a common, familiar approach.</p>
+                </section>
+            </article>
+
+            
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="ash.jeffs@gmail.com">
+        <i class="fa fa-email"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.github.com/jeffail">
+        <i class="fa fa-github"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/jeffail">
+        <i class="fa fa-twitter"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//jeffs.eu/js/jquery-2.2.4.min.js"></script>
+<script src="//jeffs.eu/js/main.js"></script>
+<script src="//jeffs.eu/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+    </body>
+</html>

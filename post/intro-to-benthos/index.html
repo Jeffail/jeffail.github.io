@@ -1,0 +1,338 @@
+    <!DOCTYPE html>
+<html lang="en-gb">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Ashley Jeffs">
+		<meta name="description" content="This is where I post my junk">
+		<meta name="generator" content="Hugo 0.33-DEV" />
+		<title>Intro to Benthos &middot; Jeffail</title>
+		<link rel="shortcut icon" href="//jeffs.eu/images/favicon.ico">
+		<link rel="stylesheet" href="//jeffs.eu/css/style.css">
+		<link rel="stylesheet" href="//jeffs.eu/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="//jeffs.eu/css/font-awesome.min.css">
+		
+
+		
+		<link href="//jeffs.eu/index.xml" rel="alternate" type="application/rss+xml" title="Jeffail" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='//jeffs.eu/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='//jeffs.eu/post'>Archive</a>
+	
+	<a href='//jeffs.eu/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="//jeffs.eu/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Intro to Benthos
+                    </h1>
+                    <h2 class="headline">
+                    Oct 17, 2016 20:09
+                    · 1003 words
+                    · 5 minutes read
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>Benthos is a persistent data streaming service, capable of connecting with a
+range of messaging protocols as a bridge. Protocols include Kafka, ZeroMQ, AMQP
+(RabbitMQ), Scalability Protocols (Nanomsg), File, HTTP 1.1 and stdin/stdout.
+The persistent buffer is optional, and uses memory-mapped files as a low-latency
+solution.</p>
+
+<p><img src="/images/intro_to_benthos/eyes.png" alt="eyes" /></p>
+
+<p>For more information on getting Benthos and general usage <a href="https://github.com/jeffail/benthos">check out the github
+page</a>. If you intend to run the examples in this blog then you should grab a
+binary before continuing.</p>
+
+<p>Benthos doesn&rsquo;t replace larger, horizontally scaled message queues such as Kafka
+or RabbitMQ, but can bridge them to services which cannot natively connect. Here
+is an example platform, and where Benthos might fit in:</p>
+
+<p><img src="/images/intro_to_benthos/platform_eg.png" alt="platform diagram" /></p>
+
+<p>Imagine we had a <code>foo</code> connected to <code>bar</code> through ZMQ. As the platform grew we
+decided to scale out most of our <code>bar</code> services via RabbitMQ, but <code>foo</code> was
+written in a language without an AMQP client lib. Instead, we can just stick
+Benthos between the two without a buffer of its own (direct bridge).</p>
+
+<h2 id="justification">Justification</h2>
+
+<p>I work on a platform that is rife with services. In order to meet high
+throughput and low latency constraints we often use ZeroMQ as a direct bridge
+between them. The three major issues we faced with this were:</p>
+
+<ul>
+<li>Upgrades that broke backwards compatibility (naughty ZMQ 3.2)</li>
+<li>Back pressure (during restarts, intermittent errors, etc)</li>
+<li>Other protocols creeping into the platform, screwing up any future restructure</li>
+</ul>
+
+<p>Benthos solves these by allowing you to glue services to new protocols without
+developer effort. You can then remove Benthos once it is no longer needed.</p>
+
+<h2 id="architecture">Architecture</h2>
+
+<p>Benthos looks good naked. The block diagram is so simple you could literally
+draw it in a png file, and host it on this blog:</p>
+
+<p><img src="/images/intro_to_benthos/benthos_arch.png" alt="benthos arch" /></p>
+
+<p>The configuration file for Benthos also follows this simple three part model of
+input, buffer and output. You can print a full list of inputs, outputs and
+buffer options, along with documentation, with:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos --list-inputs --list-buffers --list-outputs | less</code></pre></div>
+<h2 id="discoverable-configuration">Discoverable Configuration</h2>
+
+<p>Configuration sucks, both for developers and users. However, Benthos has too
+many options for flags to be viable. To make life easier Benthos has the ability
+to print a fully populated configuration file as a command. You can try it out
+with <code>benthos --print-yaml</code> or <code>benthos --print-json</code>.</p>
+
+<p>To make the config options discoverable they are formatted such that any field
+with multiple options has those options listed as sibling fields. The sibling
+fields are objects containing any unique fields for that particular option.</p>
+
+<p>For example, let&rsquo;s take a look at a snippet of the &ldquo;input&rdquo; config:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>http_server:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>address:<span style="color:#bbb"> </span>localhost:<span style="color:#40a070">80</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>/post<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>zmq:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://*:<span style="color:#40a070">1333</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span>file:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>./input.data<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>stdin:</code></pre></div>
+<p>By reading that snippet you can hopefully infer that the options for &ldquo;type&rdquo; are
+&ldquo;http_server&rdquo;, &ldquo;zmq&rdquo;, &ldquo;file&rdquo;, and &ldquo;stdin&rdquo;.</p>
+
+<h2 id="using-benthos-http-to-stdout">Using Benthos: HTTP to stdout</h2>
+
+<p>As a quick demo let&rsquo;s print HTTP POST requests to stdout. Create a file called
+&ldquo;http_to_stdout.yaml&rdquo; and write to it the following:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>http_server:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>address:<span style="color:#bbb"> </span>localhost:<span style="color:#40a070">8080</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>/post</code></pre></div>
+<p>We can leave out the entire <code>buffer</code> and <code>output</code> sections as we are using the
+defaults anyway. Change the values for <code>address</code> and <code>path</code> at your leisure.</p>
+
+<p>Run this config with:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml</code></pre></div>
+<p>You&rsquo;ll see some log printed to stderr (this would normally print to stdout, but
+an exception is made when the output is stdout.) Benthos is now listening for
+messages. You can test it by sending text with curl:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#4070a0">&#34;hello world&#34;</span></code></pre></div>
+<p>You should see it on the stdout pipe from Benthos. If at any point you suspect
+your config might be formatted incorrectly you can do a sanity check with:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml --print-yaml | less</code></pre></div>
+<p>Which will parse your config and print the full result.</p>
+
+<h2 id="multiple-inputs-outputs">Multiple Inputs/Outputs</h2>
+
+<p>When you print a config you might notice some odd input and output options
+called &ldquo;fan_in&rdquo;, &ldquo;fan_out&rdquo;, &ldquo;round_robin&rdquo;. These are special inputs and outputs
+called broker types. They allow you to configure multiple inputs/outputs in a
+certain arrangement.</p>
+
+<p>The simplest is the &ldquo;fan_in&rdquo; type, which simply reads from N inputs. To demo
+this let&rsquo;s build the previous example with the added ability to also read stdin.</p>
+
+<p>Our config input type will now be &ldquo;fan_in&rdquo;, the only config field for this type
+is &ldquo;inputs&rdquo;, which is an array of input config objects, one for each input:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>fan_in<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>fan_in:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>inputs:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>http_server:<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>address:<span style="color:#bbb"> </span>localhost:<span style="color:#40a070">8080</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>path:<span style="color:#bbb"> </span>/post<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>stdin</code></pre></div>
+<p>Here we have specified two inputs: &ldquo;http_server&rdquo; and &ldquo;stdin&rdquo;. Run it with some
+text piped to stdin:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;via stdin&#34;</span> | benthos -c ./http_to_stdout.yaml</code></pre></div>
+<p>And also send some text using curl like last time:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#4070a0">&#34;via HTTP POST&#34;</span></code></pre></div>
+<p>And you should see both &ldquo;via stdin&rdquo; and &ldquo;via HTTP POST&rdquo; from Benthos. Sorry if
+it didn&rsquo;t work I&rsquo;m not good with computers.</p>
+
+<h3 id="hot-tip">Hot Tip</h3>
+
+<p>With brokers you might find you have to copy/paste many config fields if they
+are similar. To save you some effort there is a special &ldquo;ditto&rdquo; type, which
+copies the previous config and overlays any changes.</p>
+
+<p>For example, say we are reading from kafka partitions 0, 1 and 2:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>fan_in<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>fan_in:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>inputs:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>Kafka<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>addresses:<span style="color:#bbb">
+</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>someserver:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>topic:<span style="color:#bbb"> </span>my_data_stream<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>consumer_group:<span style="color:#bbb"> </span>super_cool_consumer_group<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>ditto<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">1</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>ditto<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">2</span></code></pre></div>
+<p>All three inputs above will be configured to connect to &ldquo;someserver:9092&rdquo; with
+the topic &ldquo;my_data_stream&rdquo; and the consumer group &ldquo;super_cool_consumer_group&rdquo;.</p>
+
+<h2 id="more-useful-kafka-http-post-to-zmq">More Useful: Kafka + HTTP POST to ZMQ</h2>
+
+<p>Let&rsquo;s imagine that we had a service <code>foo</code> which reads messages from a ZMQ pull
+socket. We then decided to introduce Kafka before <code>foo</code>, and as a bridge we
+deployed Benthos with this config:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>kafka<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>kafka:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">1</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">2</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">3</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>topic:<span style="color:#bbb"> </span>foo_stream<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_<span style="color:#40a070">1</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
+</span><span style="color:#bbb"></span>output:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq<span style="color:#40a070">4</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span>zmq<span style="color:#40a070">4</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo<span style="color:#40a070">1</span>:<span style="color:#40a070">5556</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>bind:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">false</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>socket_type:<span style="color:#bbb"> </span>PUSH</code></pre></div>
+<p>Now, after some time, we want to automatically probe the resilience of our
+system by injecting messages before <code>foo</code>. This should be easy to perform from
+scripts and avoid dirtying up our Kafka logs. A small change to our previous
+config lets us do this with Benthos and HTTP:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>fan_in<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>fan_in:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>inputs:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>kafka<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>addresses:<span style="color:#bbb">
+</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">1</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">2</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">3</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>topic:<span style="color:#bbb"> </span>foo_stream<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_<span style="color:#40a070">1</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>http_server:<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>address:<span style="color:#bbb"> </span>benthos_foo_<span style="color:#40a070">1</span>:<span style="color:#40a070">8080</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>path:<span style="color:#bbb"> </span>/inject<span style="color:#bbb">
+</span><span style="color:#bbb"></span>output:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq<span style="color:#40a070">4</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span>zmq<span style="color:#40a070">4</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo<span style="color:#40a070">1</span>:<span style="color:#40a070">5556</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>bind:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">false</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>socket_type:<span style="color:#bbb"> </span>PUSH</code></pre></div>
+<p>Without losing any of our previous functionality we can now inject messages into
+our <code>foo</code> with any tool that supports HTTP. For example, with curl:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://benthos_foo_1:8080/inject -d <span style="color:#4070a0">&#34;{mangled_json:+++}&#34;</span> <span style="color:#666">||</span> alert_ops</code></pre></div>
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The perfect platform architecture doesn&rsquo;t need Benthos. However:</p>
+
+<ul>
+<li>Messaging protocols are fragmented</li>
+<li>Client libraries aren&rsquo;t always available for your stack</li>
+<li>Deployments sometimes need to change faster than the dev process can handle</li>
+<li>It&rsquo;s fun to play with messaging streams</li>
+</ul>
+
+<p>If you think Benthos might help you then grab a binary and start playing.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="ash.jeffs@gmail.com">
+        <i class="fa fa-email"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.github.com/jeffail">
+        <i class="fa fa-github"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/jeffail">
+        <i class="fa fa-twitter"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//jeffs.eu/js/jquery-2.2.4.min.js"></script>
+<script src="//jeffs.eu/js/main.js"></script>
+<script src="//jeffs.eu/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+
+    </body>
+</html>

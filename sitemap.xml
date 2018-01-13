@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>//jeffs.eu/post/bland-platforms-message-reliability/</loc>
+    <lastmod>2017-12-09T13:48:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/post/intro-to-benthos/</loc>
+    <lastmod>2016-10-17T20:09:45+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/post/foss-guide/</loc>
+    <lastmod>2016-10-07T19:17:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/about/</loc>
+    <lastmod>2016-10-07T14:02:37+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/tags/</loc>
+    <lastmod>2015-06-20T14:02:37+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/post/golang-config/</loc>
+    <lastmod>2015-01-07T12:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/post/teaching-teens/</loc>
+    <lastmod>2014-04-28T12:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/</loc>
+    <lastmod>2017-12-09T13:48:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//jeffs.eu/post/</loc>
+    <lastmod>2017-12-09T13:48:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>
