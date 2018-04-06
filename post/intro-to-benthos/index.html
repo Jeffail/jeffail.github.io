@@ -6,19 +6,19 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Ashley Jeffs">
 		<meta name="description" content="This is where I post my junk">
-		<meta name="generator" content="Hugo 0.33-DEV" />
+		<meta name="generator" content="Hugo 0.39-DEV" />
 		<title>Intro to Benthos &middot; Jeffail</title>
-		<link rel="shortcut icon" href="//jeffs.eu/images/favicon.ico">
-		<link rel="stylesheet" href="//jeffs.eu/css/style.css">
-		<link rel="stylesheet" href="//jeffs.eu/css/highlight.css">
+		<link rel="shortcut icon" href="//jeffail.uk/images/favicon.ico">
+		<link rel="stylesheet" href="//jeffail.uk/css/style.css">
+		<link rel="stylesheet" href="//jeffail.uk/css/highlight.css">
 		
 
 		
-		<link rel="stylesheet" href="//jeffs.eu/css/font-awesome.min.css">
+		<link rel="stylesheet" href="//jeffail.uk/css/font-awesome.min.css">
 		
 
 		
-		<link href="//jeffs.eu/index.xml" rel="alternate" type="application/rss+xml" title="Jeffail" />
+		<link href="//jeffail.uk/index.xml" rel="alternate" type="application/rss+xml" title="Jeffail" />
 		
 	</head>
 
@@ -26,16 +26,16 @@
        <nav class="main-nav">
 	
 	
-		<a href='//jeffs.eu/'> <span class="arrow">←</span>Home</a>
+		<a href='//jeffail.uk/'> <span class="arrow">←</span>Home</a>
 	
-	<a href='//jeffs.eu/post'>Archive</a>
+	<a href='//jeffail.uk/post'>Archive</a>
 	
-	<a href='//jeffs.eu/about'>About</a>
+	<a href='//jeffail.uk/about'>About</a>
 
 	
 
 	
-	<a class="cta" href="//jeffs.eu/index.xml">Subscribe</a>
+	<a class="cta" href="//jeffail.uk/index.xml">Subscribe</a>
 	
 </nav>
 
@@ -127,7 +127,7 @@ fields are objects containing any unique fields for that particular option.</p>
 </span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>/post<span style="color:#bbb">
 </span><span style="color:#bbb">  </span>zmq:<span style="color:#bbb">
 </span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://*:<span style="color:#40a070">1333</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://<span style="color:#007020">*:1333</span><span style="color:#bbb">
 </span><span style="color:#bbb">  </span>file:<span style="color:#bbb">
 </span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>./input.data<span style="color:#bbb">
 </span><span style="color:#bbb">  </span>stdin:</code></pre></div>
@@ -222,17 +222,17 @@ deployed Benthos with this config:</p>
 </span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>kafka<span style="color:#bbb">
 </span><span style="color:#bbb">  </span>kafka:<span style="color:#bbb">
 </span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">1</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">2</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">3</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker1:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker2:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker3:<span style="color:#40a070">9092</span><span style="color:#bbb">
 </span><span style="color:#bbb">    </span>topic:<span style="color:#bbb"> </span>foo_stream<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_<span style="color:#40a070">1</span><span style="color:#bbb">
+</span><span style="color:#bbb">    </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_1<span style="color:#bbb">
 </span><span style="color:#bbb">    </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
 </span><span style="color:#bbb"></span>output:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq<span style="color:#40a070">4</span><span style="color:#bbb">
-</span><span style="color:#bbb">  </span>zmq<span style="color:#40a070">4</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq4<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>zmq4:<span style="color:#bbb">
 </span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo<span style="color:#40a070">1</span>:<span style="color:#40a070">5556</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo1:<span style="color:#40a070">5556</span><span style="color:#bbb">
 </span><span style="color:#bbb">    </span>bind:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">false</span><span style="color:#bbb">
 </span><span style="color:#bbb">    </span>socket_type:<span style="color:#bbb"> </span>PUSH</code></pre></div>
 <p>Now, after some time, we want to automatically probe the resilience of our
@@ -246,21 +246,21 @@ config lets us do this with Benthos and HTTP:</p>
 </span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>kafka<span style="color:#bbb">
 </span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
 </span><span style="color:#bbb">        </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">1</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">2</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker<span style="color:#40a070">3</span>:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker1:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker2:<span style="color:#40a070">9092</span><span style="color:#bbb">
+</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker3:<span style="color:#40a070">9092</span><span style="color:#bbb">
 </span><span style="color:#bbb">        </span>topic:<span style="color:#bbb"> </span>foo_stream<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_<span style="color:#40a070">1</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_1<span style="color:#bbb">
 </span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
 </span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
 </span><span style="color:#bbb">      </span>http_server:<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>address:<span style="color:#bbb"> </span>benthos_foo_<span style="color:#40a070">1</span>:<span style="color:#40a070">8080</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>address:<span style="color:#bbb"> </span>benthos_foo_1:<span style="color:#40a070">8080</span><span style="color:#bbb">
 </span><span style="color:#bbb">        </span>path:<span style="color:#bbb"> </span>/inject<span style="color:#bbb">
 </span><span style="color:#bbb"></span>output:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq<span style="color:#40a070">4</span><span style="color:#bbb">
-</span><span style="color:#bbb">  </span>zmq<span style="color:#40a070">4</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq4<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>zmq4:<span style="color:#bbb">
 </span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo<span style="color:#40a070">1</span>:<span style="color:#40a070">5556</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo1:<span style="color:#40a070">5556</span><span style="color:#bbb">
 </span><span style="color:#bbb">    </span>bind:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">false</span><span style="color:#bbb">
 </span><span style="color:#bbb">    </span>socket_type:<span style="color:#bbb"> </span>PUSH</code></pre></div>
 <p>Without losing any of our previous functionality we can now inject messages into
@@ -323,9 +323,9 @@ our <code>foo</code> with any tool that supports HTTP. For example, with curl:</
 
         </section>
 
-        <script src="//jeffs.eu/js/jquery-2.2.4.min.js"></script>
-<script src="//jeffs.eu/js/main.js"></script>
-<script src="//jeffs.eu/js/highlight.min.js"></script>
+        <script src="//jeffail.uk/js/jquery-2.2.4.min.js"></script>
+<script src="//jeffail.uk/js/main.js"></script>
+<script src="//jeffail.uk/js/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
 
