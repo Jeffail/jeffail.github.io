@@ -910,14 +910,14 @@ a.symbol:hover {
   padding: 0;
 }
 #TableOfContents a{
-  font-family: Menlo, Monaco, Courier;
+  font-family: Menlo, Monaco, Courier, monospace;
   background-color: #fff;
   font-size: 11px;
   padding: 2px 3px;
   font-weight: 100;
 }
 code{
-  font-family: Menlo, Monaco, Courier;
+  font-family:  Menlo, Monaco, Courier, monospace;
   font-weight: normal;
   padding: 2px 3px;
   font-size: 14px;
