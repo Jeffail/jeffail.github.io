@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Ashley Jeffs">
 		<meta name="description" content="This is where I post my junk">
-		<meta name="generator" content="Hugo 0.42-DEV" />
+		<meta name="generator" content="Hugo 0.54.0" />
 		<title>Golang service configuration &middot; Jeffail</title>
 		<link rel="shortcut icon" href="//www.jeffail.uk/images/favicon.ico">
 		<link rel="apple-touch-icon" sizes="180x180" href="//www.jeffail.uk/images/apple-touch-icon.png">
@@ -67,25 +67,23 @@
                 <section id="post-body">
                     <p>Rob Pike wrote an interesting blog about API options, it can be found <a href="http://commandcenter.blogspot.nl/2014/01/self-referential-functions-and-design.html">here</a>. It&rsquo;s worth a read, but the summary is that it&rsquo;s a damn fine idea to design options as a variadic argument of configuring functors.</p>
 
-<p></p>
-
 <p>Dave Cheney presented a nice summary of the pros and cons of this versus other approaches (can be read <a href="http://dave.cheney.net/tag/functional-options">here</a>), and a nice example he gave of what it might look like is this:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> NewServer(addr <span style="color:#902000">string</span>, options <span style="color:#666">...</span><span style="color:#007020;font-weight:bold">func</span>(<span style="color:#666">*</span>Server)) (<span style="color:#666">*</span>Server, <span style="color:#902000">error</span>)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">NewServer</span>(addr <span style="color:#902000">string</span>, options <span style="color:#666">...</span><span style="color:#007020;font-weight:bold">func</span>(<span style="color:#666">*</span>Server)) (<span style="color:#666">*</span>Server, <span style="color:#902000">error</span>)
 
-<span style="color:#007020;font-weight:bold">func</span> main() {
-	src, _ <span style="color:#666">:=</span> NewServer(<span style="color:#4070a0">&#34;localhost&#34;</span>) <span style="color:#60a0b0;font-style:italic">// defaults
+<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">main</span>() {
+	src, _ <span style="color:#666">:=</span> <span style="color:#06287e">NewServer</span>(<span style="color:#4070a0">&#34;localhost&#34;</span>) <span style="color:#60a0b0;font-style:italic">// defaults
 </span><span style="color:#60a0b0;font-style:italic"></span>
 	timeout <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">func</span>(srv <span style="color:#666">*</span>Server) {
 		srv.timeout = <span style="color:#40a070">60</span> <span style="color:#666">*</span> time.Second
 	}
 
 	tls <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">func</span>(srv <span style="color:#666">*</span>Server) {
-		config <span style="color:#666">:=</span> loadTLSConfig()
-		srv.listener = tls.NewListener(srv.listener, <span style="color:#666">&amp;</span>config)
+		config <span style="color:#666">:=</span> <span style="color:#06287e">loadTLSConfig</span>()
+		srv.listener = tls.<span style="color:#06287e">NewListener</span>(srv.listener, <span style="color:#666">&amp;</span>config)
 	}
 
 	<span style="color:#60a0b0;font-style:italic">// listen securely with a 60 second timeout
-</span><span style="color:#60a0b0;font-style:italic"></span>	src2, _ <span style="color:#666">:=</span> NewServer(<span style="color:#4070a0">&#34;localhost&#34;</span>, timeout, tls)
+</span><span style="color:#60a0b0;font-style:italic"></span>	src2, _ <span style="color:#666">:=</span> <span style="color:#06287e">NewServer</span>(<span style="color:#4070a0">&#34;localhost&#34;</span>, timeout, tls)
 }</code></pre></div>
 <p>This pattern gives users of an API a simple syntax for expressing function options, but simultaneously allows the author of the API to dodge the problem of ambiguous zero values vs defaults, and also the ability to expand options without regression.</p>
 
@@ -105,15 +103,15 @@
 <p>My solution isn&rsquo;t well suited for writing libraries, but for services I solved this problem by adding a function definition to every component that has an options struct, which returns an options object fully populated with default values.</p>
 
 <p>To use a component you now generate a default options object, modify any fields of interest and then pass it on. The code looks like this:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">fooOptions <span style="color:#666">:=</span> foo.NewOptions()
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">fooOptions <span style="color:#666">:=</span> foo.<span style="color:#06287e">NewOptions</span>()
 fooOptions.Thing = <span style="color:#4070a0">&#34;hello&#34;</span>
 fooOptions.Bar.Baz = <span style="color:#40a070">500</span>
 
-bar <span style="color:#666">:=</span> foo.New(fooOptions)
+bar <span style="color:#666">:=</span> foo.<span style="color:#06287e">New</span>(fooOptions)
 
 <span style="color:#60a0b0;font-style:italic">// When using only default values:
 </span><span style="color:#60a0b0;font-style:italic"></span>
-bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></div>
+bar2 <span style="color:#666">:=</span> foo.<span style="color:#06287e">New</span>(foo.<span style="color:#06287e">NewOptions</span>())</code></pre></div>
 <p>Defining our Foo looks like this:</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#60a0b0;font-style:italic">// Options - options for our foo
 </span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">type</span> Options {
@@ -123,11 +121,11 @@ bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></
 }
 
 <span style="color:#60a0b0;font-style:italic">// NewOptions - returns a new options object with default values
-</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> NewOptions() Options {
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">NewOptions</span>() Options {
 	<span style="color:#007020;font-weight:bold">return</span> Options{
 		Thing:      <span style="color:#4070a0">&#34;wat&#34;</span>,
 		OtherThing: <span style="color:#4070a0">&#34;don&#39;t change me plz&#34;</span>,
-		Bar:        bar.NewOptions(),
+		Bar:        bar.<span style="color:#06287e">NewOptions</span>(),
 	}
 }
 
@@ -138,10 +136,10 @@ bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></
 }
 
 <span style="color:#60a0b0;font-style:italic">// Creates a new foo
-</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> New(options Options) <span style="color:#666">*</span>Foo {
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">New</span>(options Options) <span style="color:#666">*</span>Foo {
 	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">&amp;</span>Foo{
 		options: options,
-		bar:     bar.New(options.Bar),
+		bar:     bar.<span style="color:#06287e">New</span>(options.Bar),
 	}
 }</code></pre></div>
 <p>Take note that since we&rsquo;re using structs we can easily nest options within the options of a parent object, this hierarchy also gives you the ability to intuitively separate options for an object type based on its lineage (you might have two SQL CRUD objects for two different areas of your code base for example).</p>
@@ -153,34 +151,34 @@ bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></
 	ThingThree jup.Options <span style="color:#4070a0">`json:&#34;thing_three&#34;`</span>
 }
 
-<span style="color:#007020;font-weight:bold">func</span> newServiceOptions() serviceOptions {
+<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">newServiceOptions</span>() serviceOptions {
 	<span style="color:#007020;font-weight:bold">return</span> serviceOptions{
-		ThingOne:   foo.NewOptions(),
-		ThingTwo:   yaz.NewOptions(),
-		ThingThree: jup.NewOptions(),
+		ThingOne:   foo.<span style="color:#06287e">NewOptions</span>(),
+		ThingTwo:   yaz.<span style="color:#06287e">NewOptions</span>(),
+		ThingThree: jup.<span style="color:#06287e">NewOptions</span>(),
 	}
 }
 
-<span style="color:#007020;font-weight:bold">func</span> main() {
-	options <span style="color:#666">:=</span> newServiceOptions()
+<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">main</span>() {
+	options <span style="color:#666">:=</span> <span style="color:#06287e">newServiceOptions</span>()
 
 	<span style="color:#60a0b0;font-style:italic">// ... read some cmd flags ...
 </span><span style="color:#60a0b0;font-style:italic"></span>
 	<span style="color:#007020;font-weight:bold">if</span> readConfig {
-		readConfigFile(<span style="color:#666">&amp;</span>options)
+		<span style="color:#06287e">readConfigFile</span>(<span style="color:#666">&amp;</span>options)
 	}
 	<span style="color:#007020;font-weight:bold">if</span> printConfig {
-		printConfigFile(options)
+		<span style="color:#06287e">printConfigFile</span>(options)
 	}
 
-	c1 <span style="color:#666">:=</span> componentOne(options.ThingOne)
-	c2 <span style="color:#666">:=</span> componentTwo(options.ThingTwo)
-	c3 <span style="color:#666">:=</span> componentThree(options.ThingThree)
+	c1 <span style="color:#666">:=</span> <span style="color:#06287e">componentOne</span>(options.ThingOne)
+	c2 <span style="color:#666">:=</span> <span style="color:#06287e">componentTwo</span>(options.ThingTwo)
+	c3 <span style="color:#666">:=</span> <span style="color:#06287e">componentThree</span>(options.ThingThree)
 
-	<span style="color:#007020;font-weight:bold">go</span> c1.Run()
-	<span style="color:#007020;font-weight:bold">go</span> c2.Run()
+	<span style="color:#007020;font-weight:bold">go</span> c1.<span style="color:#06287e">Run</span>()
+	<span style="color:#007020;font-weight:bold">go</span> c2.<span style="color:#06287e">Run</span>()
 
-	c3.Run()
+	c3.<span style="color:#06287e">Run</span>()
 }</code></pre></div>
 <p>This solution falls short in that it isn&rsquo;t intuitive to someone picking up a library for the first time, as a natural assumption from the method signature is to use <code>bar := foo.New(foo.Options{})</code>, which is why I would only recommend this for use inside of services where it can be mandated as a common, familiar approach.</p>
                 </section>
@@ -198,7 +196,7 @@ bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></
 
 	
 	
-    <a class="symbol" href="ash.jeffs@gmail.com">
+    <a class="symbol" href="ash@jeffail.uk">
         <i class="fa fa-email"></i>
     </a>
     
@@ -221,7 +219,7 @@ bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></
     
     <p class="small">
     
-       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
     
     </p>
     <p class="small">
@@ -237,6 +235,21 @@ bar2 <span style="color:#666">:=</span> foo.New(foo.NewOptions())</code></pre></
 <script>hljs.initHighlightingOnLoad();</script>
 
 
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-135959729-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
 
 

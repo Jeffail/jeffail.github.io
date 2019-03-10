@@ -46,9 +46,7 @@ Most of the advice here will be common sense, as they are good practices in gene
       <pubDate>Wed, 07 Jan 2015 12:00:00 +0000</pubDate>
       
       <guid>//www.jeffail.uk/post/golang-config/</guid>
-      <description>&lt;p&gt;Rob Pike wrote an interesting blog about API options, it can be found &lt;a href=&#34;http://commandcenter.blogspot.nl/2014/01/self-referential-functions-and-design.html&#34;&gt;here&lt;/a&gt;. It&amp;rsquo;s worth a read, but the summary is that it&amp;rsquo;s a damn fine idea to design options as a variadic argument of configuring functors.&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Rob Pike wrote an interesting blog about API options, it can be found &lt;a href=&#34;http://commandcenter.blogspot.nl/2014/01/self-referential-functions-and-design.html&#34;&gt;here&lt;/a&gt;. It&amp;rsquo;s worth a read, but the summary is that it&amp;rsquo;s a damn fine idea to design options as a variadic argument of configuring functors.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -57,9 +55,7 @@ Most of the advice here will be common sense, as they are good practices in gene
       <pubDate>Mon, 28 Apr 2014 12:00:00 +0000</pubDate>
       
       <guid>//www.jeffail.uk/post/teaching-teens/</guid>
-      <description>&lt;p&gt;Teenagers are pretty much all losers. Teaching them how to write software is a mere drop in their vast ocean of ignorance, but it is a noble cause that works well to remind us real people that we are better than they are because we can do cool stuff that they cannot.&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Teenagers are pretty much all losers. Teaching them how to write software is a mere drop in their vast ocean of ignorance, but it is a noble cause that works well to remind us real people that we are better than they are because we can do cool stuff that they cannot.&lt;/p&gt;</description>
     </item>
     
   </channel>
