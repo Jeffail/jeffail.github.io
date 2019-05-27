@@ -1,0 +1,276 @@
+    <!DOCTYPE html>
+<html lang="en-gb">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Ashley Jeffs">
+		<meta name="description" content="This is where I post my junk">
+		<meta name="generator" content="Hugo 0.55.6" />
+		<title>Compiling Benthos to Web Assembly &middot; Jeffail</title>
+		<link rel="shortcut icon" href="//www.jeffail.uk/images/favicon.ico">
+		<link rel="apple-touch-icon" sizes="180x180" href="//www.jeffail.uk/images/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="//www.jeffail.uk/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="//www.jeffail.uk/images/favicon-16x16.png">
+		<link rel="manifest" href="//www.jeffail.uk/images/site.webmanifest">
+		<link rel="mask-icon" href="//www.jeffail.uk/images/safari-pinned-tab.svg" color="#000000">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="theme-color" content="#ffffff">
+
+		<link rel="stylesheet" href="//www.jeffail.uk/css/style.css">
+		<link rel="stylesheet" href="//www.jeffail.uk/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="//www.jeffail.uk/css/font-awesome.min.css">
+		
+
+		
+		<link href="//www.jeffail.uk/index.xml" rel="alternate" type="application/rss+xml" title="Jeffail" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='//www.jeffail.uk/'> <span class="arrow">←</span>Home</a>
+	
+	
+	<a href='//www.jeffail.uk/about'>About</a>
+	<a href="https://www.github.com/Jeffail">Github</a>
+	<a href="https://www.youtube.com/channel/UCjIYEhBrw3GQwpRWe1asufg">Youtube</a>
+
+	
+
+	
+	<a class="cta" href="//www.jeffail.uk/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Compiling Benthos to Web Assembly
+                    </h1>
+                    <h2 class="headline">
+                    May 27, 2019
+                    · 708 words
+                    · 4 minutes read
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>Web assembly won&rsquo;t fix seasons 7 and 8, but it&rsquo;s still pretty cool. At a
+<a href="https://underthehood.meltwater.com/">Meltwater</a> hackathon I had a project in mind (details soon to
+follow) that would benefit hugely from <a href="https://www.benthos.dev/">Benthos</a> components running
+directly in the browser. I therefore set out to compile it in wasm, this is my
+short and sweet journey.</p>
+
+<h2 id="the-build">The Build</h2>
+
+<p>The first thing I did and the first thing you ought to do if you are targeting
+wasm yourself is skim through <a href="https://github.com/golang/go/wiki/WebAssembly">this section of the Go wiki</a>.</p>
+
+<p>In short, I wrote a Go file:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">package</span> main
+
+<span style="color:#007020;font-weight:bold">import</span> (
+    <span style="color:#4070a0">&#34;syscall/js&#34;</span>
+
+    <span style="color:#4070a0">&#34;github.com/Jeffail/benthos/lib/config&#34;</span>
+    <span style="color:#4070a0">&#34;gopkg.in/yaml.v3&#34;</span>
+)
+
+<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">normalise</span>(this js.Value, args []js.Value) <span style="color:#007020;font-weight:bold">interface</span>{} {
+    <span style="color:#007020;font-weight:bold">var</span> configStr <span style="color:#902000">string</span>
+    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#007020">len</span>(args) &gt; <span style="color:#40a070">0</span> {
+        configStr = args[<span style="color:#40a070">0</span>].<span style="color:#06287e">String</span>()
+    }
+
+    conf <span style="color:#666">:=</span> config.<span style="color:#06287e">New</span>()
+
+    <span style="color:#60a0b0;font-style:italic">// Ignoring errors for brevity
+</span><span style="color:#60a0b0;font-style:italic"></span>    yaml.<span style="color:#06287e">Unmarshal</span>([]<span style="color:#007020">byte</span>(configStr), <span style="color:#666">&amp;</span>conf)
+
+    sanit, _ <span style="color:#666">:=</span> conf.<span style="color:#06287e">Sanitised</span>()
+    sanitBytes, _ <span style="color:#666">:=</span> yaml.<span style="color:#06287e">Marshal</span>(sanit)
+
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020">string</span>(sanitBytes)
+}
+
+<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">main</span>() {
+    c <span style="color:#666">:=</span> <span style="color:#007020">make</span>(<span style="color:#007020;font-weight:bold">chan</span> <span style="color:#007020;font-weight:bold">struct</span>{}, <span style="color:#40a070">0</span>)
+    js.<span style="color:#06287e">Global</span>().<span style="color:#06287e">Set</span>(<span style="color:#4070a0">&#34;benthosNormaliseConfig&#34;</span>, js.<span style="color:#06287e">FuncOf</span>(normalise))
+    <span style="color:#666">&lt;-</span>c
+}</code></pre></div>
+<p>And compiled it:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#bb60d5">GOOS</span><span style="color:#666">=</span>js <span style="color:#bb60d5">GOARCH</span><span style="color:#666">=</span>wasm go build -o main.wasm</code></pre></div>
+<p>I was pretty sure that this would be the end of the road for me. Benthos uses a
+vast swathe of dependencies for its various connectors and so I was sure that I
+would be immobilised with errors. However, to my surprise there were only three
+(formatted for brevity):</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">lib/util/disk/check.go:29:11: undefined: syscall.Statfs_t
+github.com/edsrzf/mmap-go@v1.0.0/mmap.go:77:9: undefined: mmap
+github.com/lib/pq@v1.0.0/conn.go:321:13: undefined: userCurrent</code></pre></div>
+<p>Which involved some calls for a buffer implementation using a memory-mapped file
+library and the PostgreSQL driver for the SQL package. The errors themselves are
+basically &ldquo;this thing doesn&rsquo;t exist in Web Assembly&rdquo;, which usually means the
+library has a feature behind build constraints but doesn&rsquo;t support wasm yet.</p>
+
+<p>The solution for these problems in my case was as simple as to not to do the
+call, and perhaps document that the feature doesn&rsquo;t work with a wasm build.</p>
+
+<p>Obviously, we only want to disable these calls specifically when targeting wasm.
+In Go that&rsquo;s easy, stick a cheeky
+<a href="https://golang.org/pkg/go/build/#hdr-Build_Constraints">build constraint on there</a>. Here&rsquo;s the actual commit:
+<a href="https://github.com/Jeffail/benthos/commit/9903b3d5d8519fcf7ecbce94c336e7f054a75942#diff-146b6fd87106d7f70f56facf7b1e7d98">9903b3d5d8519fcf7ecbce94c336e7f054a75942</a>, note that you can&rsquo;t
+just constrain the feature, you also need to add an empty stub that has the
+opposite constraint in order to satisfy your build.</p>
+
+<h2 id="executing-go-from-javascript">Executing Go From JavaScript</h2>
+
+<p>The <a href="https://github.com/golang/go/wiki/WebAssembly">Go Wiki</a> shows you how to actually execute your wasm build
+and I won&rsquo;t repeat it here, but I followed the steps and it was pretty straight
+forward.</p>
+
+<p>There was, however, one issue I came across. Some functions that I was calling
+from JavaScript were causing my wasm runtime to panic and stop. The functions
+all had channel blocking in common, something like this:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">ashHasACoolBlog</span>(this js.Value, args []js.Value) <span style="color:#007020;font-weight:bold">interface</span>{} {
+    someChan <span style="color:#666">&lt;-</span> args[<span style="color:#40a070">0</span>].<span style="color:#06287e">String</span>()
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">&lt;-</span>someOtherChanIHateNamingThings
+}</code></pre></div>
+<p>The function would sometimes execute successfully. Other times, specifically for
+longer running calls, I would get a deadlock panic:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">fatal error: all goroutines are asleep - deadlock! wasm_exec.js:47:6
+wasm_exec.js:47:6
+goroutine 1 [chan receive]: wasm_exec.js:47:6
+main.main() wasm_exec.js:47:6
+    /home/ash/tmp/wasm/main.go:20 +0x7</code></pre></div>
+<p>Which was odd as they would be occasions where I would not expect a real
+deadlock. I then found the relevant docs in the <a href="https://godoc.org/syscall/js#Func"><code>syscall/js</code></a>
+package:</p>
+
+<blockquote>
+<p>Blocking operations in the wrapped function will block the event loop. As a
+consequence, if one wrapped function blocks, other wrapped funcs will not be
+processed. A blocking function should therefore explicitly start a new
+goroutine.</p>
+</blockquote>
+
+<p>The consequences of blocking sound pretty harmless here, but in reality it
+seemed to be the cause of my deadlock crash. I assume the odd error message is a
+result of some nuanced mechanics within the wasm runtime.</p>
+
+<p>I didn&rsquo;t investigate this crash any further as I was a lazy idiot back in those
+dark days. I simply stopped writing blocking functions, and instead spawned
+goroutines everywhere like they were losers at a Nickelback concert:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">iJustWantToClarify</span>(this js.Value, args []js.Value) <span style="color:#007020;font-weight:bold">interface</span>{} {
+    <span style="color:#007020;font-weight:bold">go</span> <span style="color:#007020;font-weight:bold">func</span>() {
+        someChan <span style="color:#666">&lt;-</span> args[<span style="color:#40a070">0</span>].<span style="color:#06287e">String</span>()
+        otherThing <span style="color:#666">:=</span> <span style="color:#666">&lt;-</span>someOtherChanIHateNamingThings
+
+        js.<span style="color:#06287e">Global</span>().<span style="color:#06287e">Get</span>(<span style="color:#4070a0">&#34;thatActually&#34;</span>).<span style="color:#06287e">Set</span>(
+            <span style="color:#4070a0">&#34;textContent&#34;</span>,
+            <span style="color:#4070a0">&#34;I quite enjoy and respect Knickelback as artists... &#34;</span> <span style="color:#666">+</span> otherThing,
+        )
+    }()
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020;font-weight:bold">nil</span>
+}</code></pre></div>
+<h2 id="other-issues">Other Issues</h2>
+
+<p>There weren&rsquo;t any.</p>
+
+<h2 id="final-words">Final Words</h2>
+
+<p>It took a day for me to get a working application together and soon I&rsquo;ll be
+blogging about the resulting product. Web assembly with Go is dope.</p>
+
+<p>Kudos to both the W3C and the Go team for taking their time to build something
+to completion without rushing the conclusion. Yes, I&rsquo;m still bitter about Game
+of Thrones.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="ash@jeffail.uk">
+        <i class="fa fa-email"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.github.com/Jeffail">
+        <i class="fa fa-github"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/jeffail">
+        <i class="fa fa-twitter"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.youtube.com/channel/UCjIYEhBrw3GQwpRWe1asufg">
+        <i class="fa fa-youtube"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//www.jeffail.uk/js/jquery-2.2.4.min.js"></script>
+<script src="//www.jeffail.uk/js/main.js"></script>
+<script src="//www.jeffail.uk/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-135959729-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

@@ -6,10 +6,31 @@
     <description>Recent content in Posts on Jeffail</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sat, 09 Dec 2017 13:48:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 May 2019 12:00:01 +0000</lastBuildDate>
     
 	<atom:link href="//www.jeffail.uk/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Compiling Benthos to Web Assembly</title>
+      <link>//www.jeffail.uk/post/compiling-benthos-to-wasm/</link>
+      <pubDate>Mon, 27 May 2019 12:00:01 +0000</pubDate>
+      
+      <guid>//www.jeffail.uk/post/compiling-benthos-to-wasm/</guid>
+      <description>Web assembly won&amp;rsquo;t fix seasons 7 and 8, but it&amp;rsquo;s still pretty cool. At a Meltwater hackathon I had a project in mind (details soon to follow) that would benefit hugely from Benthos components running directly in the browser. I therefore set out to compile it in wasm, this is my short and sweet journey.
+The Build The first thing I did and the first thing you ought to do if you are targeting wasm yourself is skim through this section of the Go wiki.</description>
+    </item>
+    
+    <item>
+      <title>This Is Now a Benthos Blog</title>
+      <link>//www.jeffail.uk/post/this-is-now-a-benthos-blog/</link>
+      <pubDate>Mon, 27 May 2019 12:00:00 +0000</pubDate>
+      
+      <guid>//www.jeffail.uk/post/this-is-now-a-benthos-blog/</guid>
+      <description>As Benthos matures I&amp;rsquo;m increasingly in need of a blog site for announcing and/or justifying my otherwise inexplicable decisions in a textual medium.
+Since this blog is mostly stale due to my commitments to Benthos - or, rather, I have a shinier toy to play with than this site - I think it makes sense for me to merge the two together.
+&amp;ldquo;Why not ditch this trash blog and focus on a pure Benthos blog?</description>
+    </item>
     
     <item>
       <title>Bland Platforms: Message Reliability</title>
@@ -26,12 +47,12 @@
       <pubDate>Mon, 17 Oct 2016 20:09:45 +0100</pubDate>
       
       <guid>//www.jeffail.uk/post/intro-to-benthos/</guid>
-      <description>Benthos is a persistent data streaming service, capable of connecting with a range of messaging protocols as a bridge. Protocols include Kafka, ZeroMQ, AMQP (RabbitMQ), Scalability Protocols (Nanomsg), File, HTTP 1.1 and stdin/stdout. The persistent buffer is optional, and uses memory-mapped files as a low-latency solution.
-For more information on getting Benthos and general usage check out the github page. If you intend to run the examples in this blog then you should grab a binary before continuing.</description>
+      <description>UPDATE: I&amp;rsquo;ve battered and bruised Benthos a lot since this post, leaving it warped far beyond what is described here. For a more up to date overview check out the website at https://www.benthos.dev/.
+Benthos is a persistent data streaming service, capable of connecting with a range of messaging protocols as a bridge. Protocols include Kafka, ZeroMQ, AMQP (RabbitMQ), Scalability Protocols (Nanomsg), File, HTTP 1.1 and stdin/stdout. The persistent buffer is optional, and uses memory-mapped files as a low-latency solution.</description>
     </item>
     
     <item>
-      <title>FOSS: What Will The Community Do To Me?</title>
+      <title>FOSS: What Will the Community Do to Me?</title>
       <link>//www.jeffail.uk/post/foss-guide/</link>
       <pubDate>Fri, 07 Oct 2016 19:17:00 +0000</pubDate>
       
@@ -41,7 +62,7 @@ Most of the advice here will be common sense, as they are good practices in gene
     </item>
     
     <item>
-      <title>Golang service configuration</title>
+      <title>Golang Service Configuration</title>
       <link>//www.jeffail.uk/post/golang-config/</link>
       <pubDate>Wed, 07 Jan 2015 12:00:00 +0000</pubDate>
       
@@ -50,7 +71,7 @@ Most of the advice here will be common sense, as they are good practices in gene
     </item>
     
     <item>
-      <title>Teaching teens to tech</title>
+      <title>Teaching Teens to Tech</title>
       <link>//www.jeffail.uk/post/teaching-teens/</link>
       <pubDate>Mon, 28 Apr 2014 12:00:00 +0000</pubDate>
       
