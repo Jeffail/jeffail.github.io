@@ -55,10 +55,9 @@
                     <h1>
                         Intro to Benthos
                     </h1>
+                    <h3>What Benthos is and how to use it</h3>
                     <h2 class="headline">
                     Oct 17, 2016
-                    · 1036 words
-                    · 5 minutes read
                       <span class="tags">
                       
                       </span>
@@ -120,7 +119,7 @@ draw it in a png file, and host it on this blog:</p>
 <p>The configuration file for Benthos also follows this simple three part model of
 input, buffer and output. You can print a full list of inputs, outputs and
 buffer options, along with documentation, with:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos --list-inputs --list-buffers --list-outputs | less</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos --list-inputs --list-buffers --list-outputs | less</code></pre></div>
 <h2 id="discoverable-configuration">Discoverable Configuration</h2>
 
 <p>Configuration sucks, both for developers and users. However, Benthos has too
@@ -133,17 +132,17 @@ with multiple options has those options listed as sibling fields. The sibling
 fields are objects containing any unique fields for that particular option.</p>
 
 <p>For example, let&rsquo;s take a look at a snippet of the &ldquo;input&rdquo; config:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>http_server:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>address:<span style="color:#bbb"> </span>localhost:<span style="color:#40a070">80</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>/post<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>zmq:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://<span style="color:#007020">*:1333</span><span style="color:#bbb">
-</span><span style="color:#bbb">  </span>file:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>./input.data<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>stdin:</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:
+  type: http_server
+  http_server:
+    address: localhost:<span style="color:#1c01ce">80</span>
+    path: /post
+  zmq:
+    addresses:
+      - tcp://<span style="color:#633820">*:1333</span>
+  file:
+    path: ./input.data
+  stdin:</code></pre></div>
 <p>By reading that snippet you can hopefully infer that the options for &ldquo;type&rdquo; are
 &ldquo;http_server&rdquo;, &ldquo;zmq&rdquo;, &ldquo;file&rdquo;, and &ldquo;stdin&rdquo;.</p>
 
@@ -151,23 +150,23 @@ fields are objects containing any unique fields for that particular option.</p>
 
 <p>As a quick demo let&rsquo;s print HTTP POST requests to stdout. Create a file called
 &ldquo;http_to_stdout.yaml&rdquo; and write to it the following:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>http_server:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>address:<span style="color:#bbb"> </span>localhost:<span style="color:#40a070">8080</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>path:<span style="color:#bbb"> </span>/post</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:
+  type: http_server
+  http_server:
+    address: localhost:<span style="color:#1c01ce">8080</span>
+    path: /post</code></pre></div>
 <p>We can leave out the entire <code>buffer</code> and <code>output</code> sections as we are using the
 defaults anyway. Change the values for <code>address</code> and <code>path</code> at your leisure.</p>
 
 <p>Run this config with:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml</code></pre></div>
 <p>You&rsquo;ll see some log printed to stderr (this would normally print to stdout, but
 an exception is made when the output is stdout.) Benthos is now listening for
 messages. You can test it by sending text with curl:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#4070a0">&#34;hello world&#34;</span></code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#c41a16">&#34;hello world&#34;</span></code></pre></div>
 <p>You should see it on the stdout pipe from Benthos. If at any point you suspect
 your config might be formatted incorrectly you can do a sanity check with:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml --print-yaml | less</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml --print-yaml | less</code></pre></div>
 <p>Which will parse your config and print the full result.</p>
 
 <h2 id="multiple-inputs-outputs">Multiple Inputs/Outputs</h2>
@@ -182,20 +181,20 @@ this let&rsquo;s build the previous example with the added ability to also read 
 
 <p>Our config input type will now be &ldquo;fan_in&rdquo;, the only config field for this type
 is &ldquo;inputs&rdquo;, which is an array of input config objects, one for each input:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>fan_in<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>fan_in:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>inputs:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>http_server:<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>address:<span style="color:#bbb"> </span>localhost:<span style="color:#40a070">8080</span><span style="color:#bbb">
-</span><span style="color:#bbb">        </span>path:<span style="color:#bbb"> </span>/post<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>stdin</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:
+  type: fan_in
+  fan_in:
+    inputs:
+    - type: http_server
+      http_server:
+        address: localhost:<span style="color:#1c01ce">8080</span>
+        path: /post
+    - type: stdin</code></pre></div>
 <p>Here we have specified two inputs: &ldquo;http_server&rdquo; and &ldquo;stdin&rdquo;. Run it with some
 text piped to stdin:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;via stdin&#34;</span> | benthos -c ./http_to_stdout.yaml</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#a90d91">echo</span> <span style="color:#c41a16">&#34;via stdin&#34;</span> | benthos -c ./http_to_stdout.yaml</code></pre></div>
 <p>And also send some text using curl like last time:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#4070a0">&#34;via HTTP POST&#34;</span></code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#c41a16">&#34;via HTTP POST&#34;</span></code></pre></div>
 <p>And you should see both &ldquo;via stdin&rdquo; and &ldquo;via HTTP POST&rdquo; from Benthos. Sorry if
 it didn&rsquo;t work I&rsquo;m not good with computers.</p>
 
@@ -206,23 +205,23 @@ are similar. To save you some effort there is a special &ldquo;ditto&rdquo; type
 copies the previous config and overlays any changes.</p>
 
 <p>For example, say we are reading from kafka partitions 0, 1 and 2:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>fan_in<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>fan_in:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>inputs:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>Kafka<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>someserver:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">        </span>topic:<span style="color:#bbb"> </span>my_data_stream<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>consumer_group:<span style="color:#bbb"> </span>super_cool_consumer_group<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>ditto<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">1</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>ditto<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">2</span></code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:
+  type: fan_in
+  fan_in:
+    inputs:
+    - type: Kafka
+      kafka:
+        addresses:
+          - someserver:<span style="color:#1c01ce">9092</span>
+        topic: my_data_stream
+        consumer_group: super_cool_consumer_group
+        partition: <span style="color:#1c01ce">0</span>
+    - type: ditto
+      kafka:
+        partition: <span style="color:#1c01ce">1</span>
+    - type: ditto
+      kafka:
+        partition: <span style="color:#1c01ce">2</span></code></pre></div>
 <p>All three inputs above will be configured to connect to &ldquo;someserver:9092&rdquo; with
 the topic &ldquo;my_data_stream&rdquo; and the consumer group &ldquo;super_cool_consumer_group&rdquo;.</p>
 
@@ -231,54 +230,54 @@ the topic &ldquo;my_data_stream&rdquo; and the consumer group &ldquo;super_cool_
 <p>Let&rsquo;s imagine that we had a service <code>foo</code> which reads messages from a ZMQ pull
 socket. We then decided to introduce Kafka before <code>foo</code>, and as a bridge we
 deployed Benthos with this config:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>kafka<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>kafka:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker1:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker2:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>broker3:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>topic:<span style="color:#bbb"> </span>foo_stream<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_1<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
-</span><span style="color:#bbb"></span>output:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq4<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>zmq4:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo1:<span style="color:#40a070">5556</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>bind:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">false</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>socket_type:<span style="color:#bbb"> </span>PUSH</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:
+  type: kafka
+  kafka:
+    addresses:
+      - broker1:<span style="color:#1c01ce">9092</span>
+      - broker2:<span style="color:#1c01ce">9092</span>
+      - broker3:<span style="color:#1c01ce">9092</span>
+    topic: foo_stream
+    consumer_group: benthos_foo_1
+    partition: <span style="color:#1c01ce">0</span>
+output:
+  type: zmq4
+  zmq4:
+    addresses:
+      - tcp://foo1:<span style="color:#1c01ce">5556</span>
+    bind: <span style="color:#a90d91">false</span>
+    socket_type: PUSH</code></pre></div>
 <p>Now, after some time, we want to automatically probe the resilience of our
 system by injecting messages before <code>foo</code>. This should be easy to perform from
 scripts and avoid dirtying up our Kafka logs. A small change to our previous
 config lets us do this with Benthos and HTTP:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>fan_in<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>fan_in:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>inputs:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>kafka<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>kafka:<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker1:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker2:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">          </span>-<span style="color:#bbb"> </span>broker3:<span style="color:#40a070">9092</span><span style="color:#bbb">
-</span><span style="color:#bbb">        </span>topic:<span style="color:#bbb"> </span>foo_stream<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>consumer_group:<span style="color:#bbb"> </span>benthos_foo_1<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>partition:<span style="color:#bbb"> </span><span style="color:#40a070">0</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>-<span style="color:#bbb"> </span>type:<span style="color:#bbb"> </span>http_server<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>http_server:<span style="color:#bbb">
-</span><span style="color:#bbb">        </span>address:<span style="color:#bbb"> </span>benthos_foo_1:<span style="color:#40a070">8080</span><span style="color:#bbb">
-</span><span style="color:#bbb">        </span>path:<span style="color:#bbb"> </span>/inject<span style="color:#bbb">
-</span><span style="color:#bbb"></span>output:<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>type:<span style="color:#bbb"> </span>zmq4<span style="color:#bbb">
-</span><span style="color:#bbb">  </span>zmq4:<span style="color:#bbb">
-</span><span style="color:#bbb">    </span>addresses:<span style="color:#bbb">
-</span><span style="color:#bbb">      </span>-<span style="color:#bbb"> </span>tcp://foo1:<span style="color:#40a070">5556</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>bind:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">false</span><span style="color:#bbb">
-</span><span style="color:#bbb">    </span>socket_type:<span style="color:#bbb"> </span>PUSH</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">input:
+  type: fan_in
+  fan_in:
+    inputs:
+    - type: kafka
+      kafka:
+        addresses:
+          - broker1:<span style="color:#1c01ce">9092</span>
+          - broker2:<span style="color:#1c01ce">9092</span>
+          - broker3:<span style="color:#1c01ce">9092</span>
+        topic: foo_stream
+        consumer_group: benthos_foo_1
+        partition: <span style="color:#1c01ce">0</span>
+    - type: http_server
+      http_server:
+        address: benthos_foo_1:<span style="color:#1c01ce">8080</span>
+        path: /inject
+output:
+  type: zmq4
+  zmq4:
+    addresses:
+      - tcp://foo1:<span style="color:#1c01ce">5556</span>
+    bind: <span style="color:#a90d91">false</span>
+    socket_type: PUSH</code></pre></div>
 <p>Without losing any of our previous functionality we can now inject messages into
 our <code>foo</code> with any tool that supports HTTP. For example, with curl:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://benthos_foo_1:8080/inject -d <span style="color:#4070a0">&#34;{mangled_json:+++}&#34;</span> <span style="color:#666">||</span> alert_ops</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://benthos_foo_1:8080/inject -d <span style="color:#c41a16">&#34;{mangled_json:+++}&#34;</span> <span style="color:#000">||</span> alert_ops</code></pre></div>
 <h2 id="conclusion">Conclusion</h2>
 
 <p>The perfect platform architecture doesn&rsquo;t need Benthos. However:</p>

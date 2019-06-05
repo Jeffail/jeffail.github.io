@@ -117,7 +117,7 @@ html, body {
 
 body {
     font: 16px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #333;
+    color: #000;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
@@ -367,13 +367,13 @@ em, i {
 
 #post-list h2 {
     font: normal 17px/1.5em "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #aaa;
+    color: #666;
     max-width: 400px;
     margin-top: 2px;
 }
 
 h3, h4, h5 {
-    color: #333;
+    color: #111;
 }
 
 h3 {
@@ -394,7 +394,7 @@ h5 {
 h6 {
     font-size: 13px;
     font-weight: bold;
-    color: #333;
+    color: #222;
     margin-bottom: 6px;
 }
 
@@ -501,7 +501,7 @@ Post List
 }
 
 #post-list a {
-    color: #333;
+    color: #222;
     display: block;
     font: bold 19px/1.7 "Helvetica Neue", helvetica, Arial, sans-serif;
 }
@@ -681,7 +681,7 @@ h2.month {
 #archive-list a {
     display: block;
     font: bold 17px/1.7 "Helvetica Neue", helvetica, Arial, sans-serif;
-    color: #333;
+    color: #222;
 }
 
 #archive-list .dates {
@@ -919,13 +919,15 @@ a.symbol:hover {
 code{
   font-family:  Menlo, Monaco, Courier, monospace;
   font-weight: normal;
-  padding: 2px 3px;
   font-size: 14px;
 }
 pre{
-	padding: 20px;
+  padding: 20px;
 }
-
+.highlight > pre {
+    background-color: rgb(250, 250, 250) !important;
+    border-radius: 5px;
+}
 
 /**
  * tags page

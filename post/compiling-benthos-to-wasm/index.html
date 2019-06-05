@@ -55,10 +55,9 @@
                     <h1>
                         Compiling Benthos to Web Assembly
                     </h1>
+                    <h3>Don&rsquo;t worry about why</h3>
                     <h2 class="headline">
                     May 27, 2019
-                    · 708 words
-                    · 4 minutes read
                       <span class="tags">
                       
                       </span>
@@ -70,9 +69,9 @@
 
 <p>Web assembly won&rsquo;t fix seasons 7 and 8, but it&rsquo;s still pretty cool. At a
 <a href="https://underthehood.meltwater.com/">Meltwater</a> hackathon I had a project in mind (details soon to
-follow) that would benefit hugely from <a href="https://www.benthos.dev/">Benthos</a> components running
-directly in the browser. I therefore set out to compile it in wasm, this is my
-short and sweet journey.</p>
+follow) that would benefit hugely from <a href="https://www.benthos.dev/">Benthos</a>, a stream processor
+written in Go, running directly in the browser. I therefore set out to compile
+it in wasm, this is my short and sweet journey.</p>
 
 <h2 id="the-build">The Build</h2>
 
@@ -80,44 +79,44 @@ short and sweet journey.</p>
 wasm yourself is skim through <a href="https://github.com/golang/go/wiki/WebAssembly">this section of the Go wiki</a>.</p>
 
 <p>In short, I wrote a Go file:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">package</span> main
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">package</span> <span style="color:#000">main</span>
 
-<span style="color:#007020;font-weight:bold">import</span> (
-    <span style="color:#4070a0">&#34;syscall/js&#34;</span>
+<span style="color:#a90d91">import</span> (
+    <span style="color:#c41a16">&#34;syscall/js&#34;</span>
 
-    <span style="color:#4070a0">&#34;github.com/Jeffail/benthos/lib/config&#34;</span>
-    <span style="color:#4070a0">&#34;gopkg.in/yaml.v3&#34;</span>
+    <span style="color:#c41a16">&#34;github.com/Jeffail/benthos/lib/config&#34;</span>
+    <span style="color:#c41a16">&#34;gopkg.in/yaml.v3&#34;</span>
 )
 
-<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">normalise</span>(this js.Value, args []js.Value) <span style="color:#007020;font-weight:bold">interface</span>{} {
-    <span style="color:#007020;font-weight:bold">var</span> configStr <span style="color:#902000">string</span>
-    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#007020">len</span>(args) &gt; <span style="color:#40a070">0</span> {
-        configStr = args[<span style="color:#40a070">0</span>].<span style="color:#06287e">String</span>()
+<span style="color:#a90d91">func</span> <span style="color:#000">normalise</span>(<span style="color:#000">this</span> <span style="color:#000">js</span>.<span style="color:#000">Value</span>, <span style="color:#000">args</span> []<span style="color:#000">js</span>.<span style="color:#000">Value</span>) <span style="color:#a90d91">interface</span>{} {
+    <span style="color:#a90d91">var</span> <span style="color:#000">configStr</span> <span style="color:#a90d91">string</span>
+    <span style="color:#a90d91">if</span> <span style="color:#a90d91">len</span>(<span style="color:#000">args</span>) &gt; <span style="color:#1c01ce">0</span> {
+        <span style="color:#000">configStr</span> = <span style="color:#000">args</span>[<span style="color:#1c01ce">0</span>].<span style="color:#000">String</span>()
     }
 
-    conf <span style="color:#666">:=</span> config.<span style="color:#06287e">New</span>()
+    <span style="color:#000">conf</span> <span style="color:#000">:=</span> <span style="color:#000">config</span>.<span style="color:#000">New</span>()
 
-    <span style="color:#60a0b0;font-style:italic">// Ignoring errors for brevity
-</span><span style="color:#60a0b0;font-style:italic"></span>    yaml.<span style="color:#06287e">Unmarshal</span>([]<span style="color:#007020">byte</span>(configStr), <span style="color:#666">&amp;</span>conf)
+    <span style="color:#177500">// Ignoring errors for brevity
+</span><span style="color:#177500"></span>    <span style="color:#000">yaml</span>.<span style="color:#000">Unmarshal</span>([]<span style="color:#a90d91">byte</span>(<span style="color:#000">configStr</span>), <span style="color:#000">&amp;</span><span style="color:#000">conf</span>)
 
-    sanit, _ <span style="color:#666">:=</span> conf.<span style="color:#06287e">Sanitised</span>()
-    sanitBytes, _ <span style="color:#666">:=</span> yaml.<span style="color:#06287e">Marshal</span>(sanit)
+    <span style="color:#000">sanit</span>, <span style="color:#000">_</span> <span style="color:#000">:=</span> <span style="color:#000">conf</span>.<span style="color:#000">Sanitised</span>()
+    <span style="color:#000">sanitBytes</span>, <span style="color:#000">_</span> <span style="color:#000">:=</span> <span style="color:#000">yaml</span>.<span style="color:#000">Marshal</span>(<span style="color:#000">sanit</span>)
 
-    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020">string</span>(sanitBytes)
+    <span style="color:#a90d91">return</span> <span style="color:#a90d91">string</span>(<span style="color:#000">sanitBytes</span>)
 }
 
-<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">main</span>() {
-    c <span style="color:#666">:=</span> <span style="color:#007020">make</span>(<span style="color:#007020;font-weight:bold">chan</span> <span style="color:#007020;font-weight:bold">struct</span>{}, <span style="color:#40a070">0</span>)
-    js.<span style="color:#06287e">Global</span>().<span style="color:#06287e">Set</span>(<span style="color:#4070a0">&#34;benthosNormaliseConfig&#34;</span>, js.<span style="color:#06287e">FuncOf</span>(normalise))
-    <span style="color:#666">&lt;-</span>c
+<span style="color:#a90d91">func</span> <span style="color:#000">main</span>() {
+    <span style="color:#000">c</span> <span style="color:#000">:=</span> <span style="color:#a90d91">make</span>(<span style="color:#a90d91">chan</span> <span style="color:#a90d91">struct</span>{}, <span style="color:#1c01ce">0</span>)
+    <span style="color:#000">js</span>.<span style="color:#000">Global</span>().<span style="color:#000">Set</span>(<span style="color:#c41a16">&#34;benthosNormaliseConfig&#34;</span>, <span style="color:#000">js</span>.<span style="color:#000">FuncOf</span>(<span style="color:#000">normalise</span>))
+    <span style="color:#000">&lt;-</span><span style="color:#000">c</span>
 }</code></pre></div>
 <p>And compiled it:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#bb60d5">GOOS</span><span style="color:#666">=</span>js <span style="color:#bb60d5">GOARCH</span><span style="color:#666">=</span>wasm go build -o main.wasm</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#000">GOOS</span><span style="color:#000">=</span>js <span style="color:#000">GOARCH</span><span style="color:#000">=</span>wasm go build -o main.wasm</code></pre></div>
 <p>I was pretty sure that this would be the end of the road for me. Benthos uses a
 vast swathe of dependencies for its various connectors and so I was sure that I
 would be immobilised with errors. However, to my surprise there were only three
 (formatted for brevity):</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">lib/util/disk/check.go:29:11: undefined: syscall.Statfs_t
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">lib/util/disk/check.go:29:11: undefined: syscall.Statfs_t
 github.com/edsrzf/mmap-go@v1.0.0/mmap.go:77:9: undefined: mmap
 github.com/lib/pq@v1.0.0/conn.go:321:13: undefined: userCurrent</code></pre></div>
 <p>Which involved some calls for a buffer implementation using a memory-mapped file
@@ -144,13 +143,13 @@ forward.</p>
 <p>There was, however, one issue I came across. Some functions that I was calling
 from JavaScript were causing my wasm runtime to panic and stop. The functions
 all had channel blocking in common, something like this:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">ashHasACoolBlog</span>(this js.Value, args []js.Value) <span style="color:#007020;font-weight:bold">interface</span>{} {
-    someChan <span style="color:#666">&lt;-</span> args[<span style="color:#40a070">0</span>].<span style="color:#06287e">String</span>()
-    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">&lt;-</span>someOtherChanIHateNamingThings
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">func</span> <span style="color:#000">ashHasACoolBlog</span>(<span style="color:#000">this</span> <span style="color:#000">js</span>.<span style="color:#000">Value</span>, <span style="color:#000">args</span> []<span style="color:#000">js</span>.<span style="color:#000">Value</span>) <span style="color:#a90d91">interface</span>{} {
+    <span style="color:#000">someChan</span> <span style="color:#000">&lt;-</span> <span style="color:#000">args</span>[<span style="color:#1c01ce">0</span>].<span style="color:#000">String</span>()
+    <span style="color:#a90d91">return</span> <span style="color:#000">&lt;-</span><span style="color:#000">someOtherChanIHateNamingThings</span>
 }</code></pre></div>
 <p>The function would sometimes execute successfully. Other times, specifically for
 longer running calls, I would get a deadlock panic:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">fatal error: all goroutines are asleep - deadlock! wasm_exec.js:47:6
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">fatal error: all goroutines are asleep - deadlock! wasm_exec.js:47:6
 wasm_exec.js:47:6
 goroutine 1 [chan receive]: wasm_exec.js:47:6
 main.main() wasm_exec.js:47:6
@@ -173,17 +172,17 @@ result of some nuanced mechanics within the wasm runtime.</p>
 <p>I didn&rsquo;t investigate this crash any further as I was a lazy idiot back in those
 dark days. I simply stopped writing blocking functions, and instead spawned
 goroutines everywhere like they were losers at a Nickelback concert:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">iJustWantToClarify</span>(this js.Value, args []js.Value) <span style="color:#007020;font-weight:bold">interface</span>{} {
-    <span style="color:#007020;font-weight:bold">go</span> <span style="color:#007020;font-weight:bold">func</span>() {
-        someChan <span style="color:#666">&lt;-</span> args[<span style="color:#40a070">0</span>].<span style="color:#06287e">String</span>()
-        otherThing <span style="color:#666">:=</span> <span style="color:#666">&lt;-</span>someOtherChanIHateNamingThings
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">func</span> <span style="color:#000">iJustWantToClarify</span>(<span style="color:#000">this</span> <span style="color:#000">js</span>.<span style="color:#000">Value</span>, <span style="color:#000">args</span> []<span style="color:#000">js</span>.<span style="color:#000">Value</span>) <span style="color:#a90d91">interface</span>{} {
+    <span style="color:#a90d91">go</span> <span style="color:#a90d91">func</span>() {
+        <span style="color:#000">someChan</span> <span style="color:#000">&lt;-</span> <span style="color:#000">args</span>[<span style="color:#1c01ce">0</span>].<span style="color:#000">String</span>()
+        <span style="color:#000">otherThing</span> <span style="color:#000">:=</span> <span style="color:#000">&lt;-</span><span style="color:#000">someOtherChanIHateNamingThings</span>
 
-        js.<span style="color:#06287e">Global</span>().<span style="color:#06287e">Get</span>(<span style="color:#4070a0">&#34;thatActually&#34;</span>).<span style="color:#06287e">Set</span>(
-            <span style="color:#4070a0">&#34;textContent&#34;</span>,
-            <span style="color:#4070a0">&#34;I quite enjoy and respect Knickelback as artists... &#34;</span> <span style="color:#666">+</span> otherThing,
+        <span style="color:#000">js</span>.<span style="color:#000">Global</span>().<span style="color:#000">Get</span>(<span style="color:#c41a16">&#34;thatActually&#34;</span>).<span style="color:#000">Set</span>(
+            <span style="color:#c41a16">&#34;textContent&#34;</span>,
+            <span style="color:#c41a16">&#34;I quite enjoy and respect Knickelback as artists... &#34;</span> <span style="color:#000">+</span> <span style="color:#000">otherThing</span>,
         )
     }()
-    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020;font-weight:bold">nil</span>
+    <span style="color:#a90d91">return</span> <span style="color:#a90d91">nil</span>
 }</code></pre></div>
 <h2 id="other-issues">Other Issues</h2>
 

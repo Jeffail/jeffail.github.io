@@ -55,10 +55,9 @@
                     <h1>
                         Golang Service Configuration
                     </h1>
+                    <h3>Using structs as self documenting configs</h3>
                     <h2 class="headline">
                     Jan 7, 2015
-                    · 767 words
-                    · 4 minutes read
                       <span class="tags">
                       
                       </span>
@@ -69,22 +68,22 @@
                     <p>Rob Pike wrote an interesting blog about API options, it can be found <a href="http://commandcenter.blogspot.nl/2014/01/self-referential-functions-and-design.html">here</a>. It&rsquo;s worth a read, but the summary is that it&rsquo;s a damn fine idea to design options as a variadic argument of configuring functors.</p>
 
 <p>Dave Cheney presented a nice summary of the pros and cons of this versus other approaches (can be read <a href="http://dave.cheney.net/tag/functional-options">here</a>), and a nice example he gave of what it might look like is this:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">NewServer</span>(addr <span style="color:#902000">string</span>, options <span style="color:#666">...</span><span style="color:#007020;font-weight:bold">func</span>(<span style="color:#666">*</span>Server)) (<span style="color:#666">*</span>Server, <span style="color:#902000">error</span>)
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">func</span> <span style="color:#000">NewServer</span>(<span style="color:#000">addr</span> <span style="color:#a90d91">string</span>, <span style="color:#000">options</span> <span style="color:#000">...</span><span style="color:#a90d91">func</span>(<span style="color:#000">*</span><span style="color:#000">Server</span>)) (<span style="color:#000">*</span><span style="color:#000">Server</span>, <span style="color:#a90d91">error</span>)
 
-<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">main</span>() {
-	src, _ <span style="color:#666">:=</span> <span style="color:#06287e">NewServer</span>(<span style="color:#4070a0">&#34;localhost&#34;</span>) <span style="color:#60a0b0;font-style:italic">// defaults
-</span><span style="color:#60a0b0;font-style:italic"></span>
-	timeout <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">func</span>(srv <span style="color:#666">*</span>Server) {
-		srv.timeout = <span style="color:#40a070">60</span> <span style="color:#666">*</span> time.Second
+<span style="color:#a90d91">func</span> <span style="color:#000">main</span>() {
+	<span style="color:#000">src</span>, <span style="color:#000">_</span> <span style="color:#000">:=</span> <span style="color:#000">NewServer</span>(<span style="color:#c41a16">&#34;localhost&#34;</span>) <span style="color:#177500">// defaults
+</span><span style="color:#177500"></span>
+	<span style="color:#000">timeout</span> <span style="color:#000">:=</span> <span style="color:#a90d91">func</span>(<span style="color:#000">srv</span> <span style="color:#000">*</span><span style="color:#000">Server</span>) {
+		<span style="color:#000">srv</span>.<span style="color:#000">timeout</span> = <span style="color:#1c01ce">60</span> <span style="color:#000">*</span> <span style="color:#000">time</span>.<span style="color:#000">Second</span>
 	}
 
-	tls <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">func</span>(srv <span style="color:#666">*</span>Server) {
-		config <span style="color:#666">:=</span> <span style="color:#06287e">loadTLSConfig</span>()
-		srv.listener = tls.<span style="color:#06287e">NewListener</span>(srv.listener, <span style="color:#666">&amp;</span>config)
+	<span style="color:#000">tls</span> <span style="color:#000">:=</span> <span style="color:#a90d91">func</span>(<span style="color:#000">srv</span> <span style="color:#000">*</span><span style="color:#000">Server</span>) {
+		<span style="color:#000">config</span> <span style="color:#000">:=</span> <span style="color:#000">loadTLSConfig</span>()
+		<span style="color:#000">srv</span>.<span style="color:#000">listener</span> = <span style="color:#000">tls</span>.<span style="color:#000">NewListener</span>(<span style="color:#000">srv</span>.<span style="color:#000">listener</span>, <span style="color:#000">&amp;</span><span style="color:#000">config</span>)
 	}
 
-	<span style="color:#60a0b0;font-style:italic">// listen securely with a 60 second timeout
-</span><span style="color:#60a0b0;font-style:italic"></span>	src2, _ <span style="color:#666">:=</span> <span style="color:#06287e">NewServer</span>(<span style="color:#4070a0">&#34;localhost&#34;</span>, timeout, tls)
+	<span style="color:#177500">// listen securely with a 60 second timeout
+</span><span style="color:#177500"></span>	<span style="color:#000">src2</span>, <span style="color:#000">_</span> <span style="color:#000">:=</span> <span style="color:#000">NewServer</span>(<span style="color:#c41a16">&#34;localhost&#34;</span>, <span style="color:#000">timeout</span>, <span style="color:#000">tls</span>)
 }</code></pre></div>
 <p>This pattern gives users of an API a simple syntax for expressing function options, but simultaneously allows the author of the API to dodge the problem of ambiguous zero values vs defaults, and also the ability to expand options without regression.</p>
 
@@ -104,82 +103,82 @@
 <p>My solution isn&rsquo;t well suited for writing libraries, but for services I solved this problem by adding a function definition to every component that has an options struct, which returns an options object fully populated with default values.</p>
 
 <p>To use a component you now generate a default options object, modify any fields of interest and then pass it on. The code looks like this:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">fooOptions <span style="color:#666">:=</span> foo.<span style="color:#06287e">NewOptions</span>()
-fooOptions.Thing = <span style="color:#4070a0">&#34;hello&#34;</span>
-fooOptions.Bar.Baz = <span style="color:#40a070">500</span>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#000">fooOptions</span> <span style="color:#000">:=</span> <span style="color:#000">foo</span>.<span style="color:#000">NewOptions</span>()
+<span style="color:#000">fooOptions</span>.<span style="color:#000">Thing</span> = <span style="color:#c41a16">&#34;hello&#34;</span>
+<span style="color:#000">fooOptions</span>.<span style="color:#000">Bar</span>.<span style="color:#000">Baz</span> = <span style="color:#1c01ce">500</span>
 
-bar <span style="color:#666">:=</span> foo.<span style="color:#06287e">New</span>(fooOptions)
+<span style="color:#000">bar</span> <span style="color:#000">:=</span> <span style="color:#000">foo</span>.<span style="color:#000">New</span>(<span style="color:#000">fooOptions</span>)
 
-<span style="color:#60a0b0;font-style:italic">// When using only default values:
-</span><span style="color:#60a0b0;font-style:italic"></span>
-bar2 <span style="color:#666">:=</span> foo.<span style="color:#06287e">New</span>(foo.<span style="color:#06287e">NewOptions</span>())</code></pre></div>
+<span style="color:#177500">// When using only default values:
+</span><span style="color:#177500"></span>
+<span style="color:#000">bar2</span> <span style="color:#000">:=</span> <span style="color:#000">foo</span>.<span style="color:#000">New</span>(<span style="color:#000">foo</span>.<span style="color:#000">NewOptions</span>())</code></pre></div>
 <p>Defining our Foo looks like this:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#60a0b0;font-style:italic">// Options - options for our foo
-</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">type</span> Options {
-	Thing      <span style="color:#902000">string</span>      <span style="color:#4070a0">`json:&#34;thing&#34;`</span>
-	OtherThing <span style="color:#902000">string</span>      <span style="color:#4070a0">`json:&#34;thing&#34;`</span>
-	Bar        bar.Options <span style="color:#4070a0">`json:&#34;bar&#34;`</span>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#177500">// Options - options for our foo
+</span><span style="color:#177500"></span><span style="color:#a90d91">type</span> <span style="color:#000">Options</span> {
+	<span style="color:#000">Thing</span>      <span style="color:#a90d91">string</span>      <span style="color:#c41a16">`json:&#34;thing&#34;`</span>
+	<span style="color:#000">OtherThing</span> <span style="color:#a90d91">string</span>      <span style="color:#c41a16">`json:&#34;thing&#34;`</span>
+	<span style="color:#000">Bar</span>        <span style="color:#000">bar</span>.<span style="color:#000">Options</span> <span style="color:#c41a16">`json:&#34;bar&#34;`</span>
 }
 
-<span style="color:#60a0b0;font-style:italic">// NewOptions - returns a new options object with default values
-</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">NewOptions</span>() Options {
-	<span style="color:#007020;font-weight:bold">return</span> Options{
-		Thing:      <span style="color:#4070a0">&#34;wat&#34;</span>,
-		OtherThing: <span style="color:#4070a0">&#34;don&#39;t change me plz&#34;</span>,
-		Bar:        bar.<span style="color:#06287e">NewOptions</span>(),
+<span style="color:#177500">// NewOptions - returns a new options object with default values
+</span><span style="color:#177500"></span><span style="color:#a90d91">func</span> <span style="color:#000">NewOptions</span>() <span style="color:#000">Options</span> {
+	<span style="color:#a90d91">return</span> <span style="color:#000">Options</span>{
+		<span style="color:#000">Thing</span>:      <span style="color:#c41a16">&#34;wat&#34;</span>,
+		<span style="color:#000">OtherThing</span>: <span style="color:#c41a16">&#34;don&#39;t change me plz&#34;</span>,
+		<span style="color:#000">Bar</span>:        <span style="color:#000">bar</span>.<span style="color:#000">NewOptions</span>(),
 	}
 }
 
-<span style="color:#60a0b0;font-style:italic">// A foo
-</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">type</span> Foo <span style="color:#007020;font-weight:bold">struct</span> {
-	options Options
-	bar     <span style="color:#666">*</span>Bar
+<span style="color:#177500">// A foo
+</span><span style="color:#177500"></span><span style="color:#a90d91">type</span> <span style="color:#000">Foo</span> <span style="color:#a90d91">struct</span> {
+	<span style="color:#000">options</span> <span style="color:#000">Options</span>
+	<span style="color:#000">bar</span>     <span style="color:#000">*</span><span style="color:#000">Bar</span>
 }
 
-<span style="color:#60a0b0;font-style:italic">// Creates a new foo
-</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">New</span>(options Options) <span style="color:#666">*</span>Foo {
-	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">&amp;</span>Foo{
-		options: options,
-		bar:     bar.<span style="color:#06287e">New</span>(options.Bar),
+<span style="color:#177500">// Creates a new foo
+</span><span style="color:#177500"></span><span style="color:#a90d91">func</span> <span style="color:#000">New</span>(<span style="color:#000">options</span> <span style="color:#000">Options</span>) <span style="color:#000">*</span><span style="color:#000">Foo</span> {
+	<span style="color:#a90d91">return</span> <span style="color:#000">&amp;</span><span style="color:#000">Foo</span>{
+		<span style="color:#000">options</span>: <span style="color:#000">options</span>,
+		<span style="color:#000">bar</span>:     <span style="color:#000">bar</span>.<span style="color:#000">New</span>(<span style="color:#000">options</span>.<span style="color:#000">Bar</span>),
 	}
 }</code></pre></div>
 <p>Take note that since we&rsquo;re using structs we can easily nest options within the options of a parent object, this hierarchy also gives you the ability to intuitively separate options for an object type based on its lineage (you might have two SQL CRUD objects for two different areas of your code base for example).</p>
 
 <p>This adds one extra step to defining your options, but solves our problem. Your main function for your service might look like this:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">type</span> serviceOptions <span style="color:#007020;font-weight:bold">struct</span> {
-	ThingOne   foo.Options <span style="color:#4070a0">`json:&#34;thing_one&#34;`</span>
-	ThingTwo   yaz.Options <span style="color:#4070a0">`json:&#34;thing_two&#34;`</span>
-	ThingThree jup.Options <span style="color:#4070a0">`json:&#34;thing_three&#34;`</span>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">type</span> <span style="color:#000">serviceOptions</span> <span style="color:#a90d91">struct</span> {
+	<span style="color:#000">ThingOne</span>   <span style="color:#000">foo</span>.<span style="color:#000">Options</span> <span style="color:#c41a16">`json:&#34;thing_one&#34;`</span>
+	<span style="color:#000">ThingTwo</span>   <span style="color:#000">yaz</span>.<span style="color:#000">Options</span> <span style="color:#c41a16">`json:&#34;thing_two&#34;`</span>
+	<span style="color:#000">ThingThree</span> <span style="color:#000">jup</span>.<span style="color:#000">Options</span> <span style="color:#c41a16">`json:&#34;thing_three&#34;`</span>
 }
 
-<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">newServiceOptions</span>() serviceOptions {
-	<span style="color:#007020;font-weight:bold">return</span> serviceOptions{
-		ThingOne:   foo.<span style="color:#06287e">NewOptions</span>(),
-		ThingTwo:   yaz.<span style="color:#06287e">NewOptions</span>(),
-		ThingThree: jup.<span style="color:#06287e">NewOptions</span>(),
+<span style="color:#a90d91">func</span> <span style="color:#000">newServiceOptions</span>() <span style="color:#000">serviceOptions</span> {
+	<span style="color:#a90d91">return</span> <span style="color:#000">serviceOptions</span>{
+		<span style="color:#000">ThingOne</span>:   <span style="color:#000">foo</span>.<span style="color:#000">NewOptions</span>(),
+		<span style="color:#000">ThingTwo</span>:   <span style="color:#000">yaz</span>.<span style="color:#000">NewOptions</span>(),
+		<span style="color:#000">ThingThree</span>: <span style="color:#000">jup</span>.<span style="color:#000">NewOptions</span>(),
 	}
 }
 
-<span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">main</span>() {
-	options <span style="color:#666">:=</span> <span style="color:#06287e">newServiceOptions</span>()
+<span style="color:#a90d91">func</span> <span style="color:#000">main</span>() {
+	<span style="color:#000">options</span> <span style="color:#000">:=</span> <span style="color:#000">newServiceOptions</span>()
 
-	<span style="color:#60a0b0;font-style:italic">// ... read some cmd flags ...
-</span><span style="color:#60a0b0;font-style:italic"></span>
-	<span style="color:#007020;font-weight:bold">if</span> readConfig {
-		<span style="color:#06287e">readConfigFile</span>(<span style="color:#666">&amp;</span>options)
+	<span style="color:#177500">// ... read some cmd flags ...
+</span><span style="color:#177500"></span>
+	<span style="color:#a90d91">if</span> <span style="color:#000">readConfig</span> {
+		<span style="color:#000">readConfigFile</span>(<span style="color:#000">&amp;</span><span style="color:#000">options</span>)
 	}
-	<span style="color:#007020;font-weight:bold">if</span> printConfig {
-		<span style="color:#06287e">printConfigFile</span>(options)
+	<span style="color:#a90d91">if</span> <span style="color:#000">printConfig</span> {
+		<span style="color:#000">printConfigFile</span>(<span style="color:#000">options</span>)
 	}
 
-	c1 <span style="color:#666">:=</span> <span style="color:#06287e">componentOne</span>(options.ThingOne)
-	c2 <span style="color:#666">:=</span> <span style="color:#06287e">componentTwo</span>(options.ThingTwo)
-	c3 <span style="color:#666">:=</span> <span style="color:#06287e">componentThree</span>(options.ThingThree)
+	<span style="color:#000">c1</span> <span style="color:#000">:=</span> <span style="color:#000">componentOne</span>(<span style="color:#000">options</span>.<span style="color:#000">ThingOne</span>)
+	<span style="color:#000">c2</span> <span style="color:#000">:=</span> <span style="color:#000">componentTwo</span>(<span style="color:#000">options</span>.<span style="color:#000">ThingTwo</span>)
+	<span style="color:#000">c3</span> <span style="color:#000">:=</span> <span style="color:#000">componentThree</span>(<span style="color:#000">options</span>.<span style="color:#000">ThingThree</span>)
 
-	<span style="color:#007020;font-weight:bold">go</span> c1.<span style="color:#06287e">Run</span>()
-	<span style="color:#007020;font-weight:bold">go</span> c2.<span style="color:#06287e">Run</span>()
+	<span style="color:#a90d91">go</span> <span style="color:#000">c1</span>.<span style="color:#000">Run</span>()
+	<span style="color:#a90d91">go</span> <span style="color:#000">c2</span>.<span style="color:#000">Run</span>()
 
-	c3.<span style="color:#06287e">Run</span>()
+	<span style="color:#000">c3</span>.<span style="color:#000">Run</span>()
 }</code></pre></div>
 <p>This solution falls short in that it isn&rsquo;t intuitive to someone picking up a library for the first time, as a natural assumption from the method signature is to use <code>bar := foo.New(foo.Options{})</code>, which is why I would only recommend this for use inside of services where it can be mandated as a common, familiar approach.</p>
                 </section>

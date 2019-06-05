@@ -17,7 +17,7 @@
       <pubDate>Mon, 27 May 2019 12:00:01 +0000</pubDate>
       
       <guid>//www.jeffail.uk/post/compiling-benthos-to-wasm/</guid>
-      <description>Web assembly won&amp;rsquo;t fix seasons 7 and 8, but it&amp;rsquo;s still pretty cool. At a Meltwater hackathon I had a project in mind (details soon to follow) that would benefit hugely from Benthos components running directly in the browser. I therefore set out to compile it in wasm, this is my short and sweet journey.
+      <description>Web assembly won&amp;rsquo;t fix seasons 7 and 8, but it&amp;rsquo;s still pretty cool. At a Meltwater hackathon I had a project in mind (details soon to follow) that would benefit hugely from Benthos, a stream processor written in Go, running directly in the browser. I therefore set out to compile it in wasm, this is my short and sweet journey.
 The Build The first thing I did and the first thing you ought to do if you are targeting wasm yourself is skim through this section of the Go wiki.</description>
     </item>
     
@@ -27,7 +27,7 @@ The Build The first thing I did and the first thing you ought to do if you are t
       <pubDate>Mon, 27 May 2019 12:00:00 +0000</pubDate>
       
       <guid>//www.jeffail.uk/post/this-is-now-a-benthos-blog/</guid>
-      <description>As Benthos matures I&amp;rsquo;m increasingly in need of a blog site for announcing and/or justifying my otherwise inexplicable decisions in a textual medium.
+      <description>As Benthos matures I&amp;rsquo;m increasingly in need of a blog site for announcing and/or justifying my otherwise inexplicable decisions.
 Since this blog is mostly stale due to my commitments to Benthos - or, rather, I have a shinier toy to play with than this site - I think it makes sense for me to merge the two together.
 &amp;ldquo;Why not ditch this trash blog and focus on a pure Benthos blog?</description>
     </item>
