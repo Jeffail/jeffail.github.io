@@ -6,10 +6,20 @@
     <description>Recent content on Jeffail</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 27 May 2019 12:00:01 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 17 Jun 2019 00:00:00 +0100</lastBuildDate>
     
 	<atom:link href="//www.jeffail.uk/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Introducing Benthos Lab</title>
+      <link>//www.jeffail.uk/post/introducing-benthos-lab/</link>
+      <pubDate>Mon, 17 Jun 2019 00:00:00 +0100</pubDate>
+      
+      <guid>//www.jeffail.uk/post/introducing-benthos-lab/</guid>
+      <description>After experimenting with innovative new ways to choke your browser to death I am pleased to announce Benthos Lab, which lives at https://lab.benthos.dev and is being graciously hosted by Meltwater.
+Benthos Lab is a website where users of the Benthos stream processor can write, format, execute and share their pipeline configurations. This was made possible by compiling the entire service (written in Go) into Web Assembly so that it can run directly in your browser.</description>
+    </item>
     
     <item>
       <title>Compiling Benthos to Web Assembly</title>

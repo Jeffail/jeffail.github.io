@@ -1,0 +1,225 @@
+    <!DOCTYPE html>
+<html lang="en-gb">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Ashley Jeffs">
+		<meta name="description" content="This is where I post my junk">
+		<meta name="generator" content="Hugo 0.55.6" />
+		<title>Introducing Benthos Lab &middot; Jeffail</title>
+		<link rel="shortcut icon" href="//www.jeffail.uk/images/favicon.ico">
+		<link rel="apple-touch-icon" sizes="180x180" href="//www.jeffail.uk/images/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="//www.jeffail.uk/images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="//www.jeffail.uk/images/favicon-16x16.png">
+		<link rel="manifest" href="//www.jeffail.uk/images/site.webmanifest">
+		<link rel="mask-icon" href="//www.jeffail.uk/images/safari-pinned-tab.svg" color="#000000">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="theme-color" content="#ffffff">
+
+		<link rel="stylesheet" href="//www.jeffail.uk/css/style.css">
+		<link rel="stylesheet" href="//www.jeffail.uk/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="//www.jeffail.uk/css/font-awesome.min.css">
+		
+
+		
+		<link href="//www.jeffail.uk/index.xml" rel="alternate" type="application/rss+xml" title="Jeffail" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='//www.jeffail.uk/'> <span class="arrow">←</span>Home</a>
+	
+	
+	<a href='//www.jeffail.uk/about'>About</a>
+	<a href="https://www.github.com/Jeffail">Github</a>
+	<a href="https://www.youtube.com/channel/UCjIYEhBrw3GQwpRWe1asufg">Youtube</a>
+
+	
+
+	
+	<a class="cta" href="//www.jeffail.uk/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>
+                        Introducing Benthos Lab
+                    </h1>
+                    <h3>Where you can build your very own monstrosities</h3>
+                    <h2 class="headline">
+                    Jun 17, 2019
+                      <span class="tags">
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                <section id="post-body">
+                    
+
+<p>After experimenting with innovative new ways to choke your browser to death I am
+pleased to announce Benthos Lab, which lives at
+<a href="https://lab.benthos.dev">https://lab.benthos.dev</a> and is being graciously hosted by
+<a href="https://underthehood.meltwater.com/">Meltwater</a>.</p>
+
+<p>Benthos Lab is a website where users of the <a href="https://www.benthos.dev">Benthos stream processor</a>
+can write, format, execute and share their pipeline configurations. This was
+made possible by compiling the entire service (written in Go) into Web Assembly
+so that it can run directly in your browser.</p>
+
+<p>Here&rsquo;s a video of it in action: <a href="https://youtu.be/1ZN-42A0sJU">https://youtu.be/1ZN-42A0sJU</a>.</p>
+
+<p>Some technical details about how this was achieved can be found in
+<a href="/post/compiling-benthos-to-wasm/">a previous post of mine</a>. The repo can be found at:
+<a href="https://github.com/benthosdev/benthos-lab">https://github.com/benthosdev/benthos-lab</a>, feel free to clone it,
+hack it and host your own version.</p>
+
+<p><a href="https://lab.benthos.dev"><img src="/images/introducing-benthos-lab/banner.svg" alt="benthos-lab" /></a></p>
+
+<p>Like every good laboratory it is scrappy and sometimes explodes. You need a
+modern browser version and it doesn&rsquo;t currently support mobile. Regardless, I
+think it&rsquo;s a good time to invite you try it out. Don&rsquo;t worry, I&rsquo;ll be watching
+from a safe distance.</p>
+
+<p>Also, if it does break on you then please remember that you don&rsquo;t pay me for
+this, you vile parasite.</p>
+
+<h2 id="why">Why</h2>
+
+<p>At Meltwater we have many distributed teams using Benthos for a wide and ever
+increasing list of use cases, which results in a lot of remote collaboration.</p>
+
+<p>For the slower moving, asynchronous types of work we are usually fine with ye
+olde git. However, sometimes it&rsquo;s nice to quickly hash stuff out, at which point
+things would suddenly devolve into a barrage of files getting chaotically thrown
+at a slack channel.</p>
+
+<p><img src="/images/introducing-benthos-lab/slamslack.jpg" alt="slamming-slack" /></p>
+
+<p>By contrast, the lab is a civilised place where one can quickly and easily
+create a pipeline concept, including sample input data, and share it directly
+with a group. Opening up a shared lab provides all that same context, allows you
+to make your own revisions to it, and even lets you execute it in order to see
+the results it produces.</p>
+
+<p><img src="/images/introducing-benthos-lab/genteel.jpg" alt="genteel-lab" /></p>
+
+<p>For our teams this app dramatically reduced the time taken to create, prove and
+demonstrate a pipeline concept. It&rsquo;s also much quicker for me to help teams that
+have issues with their configs as they can make sure I have all the information
+needed up front with a single URL.</p>
+
+<h3 id="use-it-to-build-your-own-web-app">Use it to build your own web app</h3>
+
+<p>There&rsquo;s also plenty of unintended use cases for Benthos Lab as it basically
+allows you to build your own custom web applications. Here&rsquo;s a session that
+lower cases and normalises a JSON document, computes its sha256 hash and then
+hex encodes the hash:
+<a href="https://lab.benthos.dev/l/N-3sss3WPjj#input">https://lab.benthos.dev/l/N-3sss3WPjj#input</a>.</p>
+
+<p>Pro tip: if you add the anchor <code>#input</code> to the end of the session URL then it
+opens up at the input tab for quickly inserting stuff.</p>
+
+<p>Since there&rsquo;s such a vast catalogue of Benthos
+<a href="https://docs.benthos.dev/processors/">processors available</a> I&rsquo;ve already found myself bookmarking a
+few lab sessions as general utilities.</p>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>With this running within the sandbox of your browser there&rsquo;s lots of missing
+functionality. For example, you can&rsquo;t create TCP/UDP connections (as of right
+now) and you can&rsquo;t access a file system.</p>
+
+<p>However, I don&rsquo;t plan to address this any time soon as the intention of the app
+is to test snippets of config, not to execute your whole damn streaming
+pipeline. You ought to learn to manage your expectations.</p>
+
+<p>What I will do though is continue to improve the UI. If a feature you want is
+missing (or broken, obviously) then please <a href="https://github.com/benthosdev/benthos-lab/issues">open an issue</a>.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="ash@jeffail.uk">
+        <i class="fa fa-email"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.github.com/Jeffail">
+        <i class="fa fa-github"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/jeffail">
+        <i class="fa fa-twitter"></i>
+    </a>
+    
+    <a class="symbol" href="https://www.youtube.com/channel/UCjIYEhBrw3GQwpRWe1asufg">
+        <i class="fa fa-youtube"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//www.jeffail.uk/js/jquery-2.2.4.min.js"></script>
+<script src="//www.jeffail.uk/js/main.js"></script>
+<script src="//www.jeffail.uk/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-135959729-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

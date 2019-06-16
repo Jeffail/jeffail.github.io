@@ -3,20 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>//www.jeffail.uk/post/compiling-benthos-to-wasm/</loc>
-    <lastmod>2019-05-27T12:00:01+00:00</lastmod>
+    <loc>//www.jeffail.uk/post/introducing-benthos-lab/</loc>
+    <lastmod>2019-06-17T00:00:00+01:00</lastmod>
   </url>
   
   <url>
     <loc>//www.jeffail.uk/</loc>
-    <lastmod>2019-05-27T12:00:01+00:00</lastmod>
+    <lastmod>2019-06-17T00:00:00+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>//www.jeffail.uk/post/</loc>
-    <lastmod>2019-05-27T12:00:01+00:00</lastmod>
+    <lastmod>2019-06-17T00:00:00+01:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//www.jeffail.uk/post/compiling-benthos-to-wasm/</loc>
+    <lastmod>2019-05-27T12:00:01+00:00</lastmod>
   </url>
   
   <url>
