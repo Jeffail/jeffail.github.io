@@ -923,6 +923,7 @@ code{
 }
 pre{
   padding: 20px;
+  overflow: auto;
 }
 .highlight > pre {
     background-color: rgb(250, 250, 250) !important;

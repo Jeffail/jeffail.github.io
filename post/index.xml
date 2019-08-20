@@ -6,10 +6,20 @@
     <description>Recent content in Posts on Jeffail</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 17 Jun 2019 00:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 20 Aug 2019 00:00:00 +0100</lastBuildDate>
     
 	<atom:link href="//www.jeffail.uk/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Write a Benthos Plugin</title>
+      <link>//www.jeffail.uk/post/write-a-benthos-plugin/</link>
+      <pubDate>Tue, 20 Aug 2019 00:00:00 +0100</pubDate>
+      
+      <guid>//www.jeffail.uk/post/write-a-benthos-plugin/</guid>
+      <description>I&amp;rsquo;m going to walk you through writing a Benthos stream processing plugin from scratch in Go. Too lazy to read? You can find a video equivalent of this post at: https://youtu.be/Ilah_Y0uMk4. If you prefer to dig straight into code then you should check out the benthos-plugin-example repo.
+Plugins allow you to embed your code within Benthos as a component. Processors are the most common type of component to get plugged, which is what we&amp;rsquo;re going to do in this post.</description>
+    </item>
     
     <item>
       <title>Introducing Benthos Lab</title>
