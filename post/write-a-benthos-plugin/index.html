@@ -102,15 +102,13 @@
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mkdir foo <span style="color:#000">&amp;&amp;</span> <span style="color:#a90d91">cd</span> foo
 go mod init github.com/bar/foo</code></pre></div>
 <p>Next, you need to pull in your only dependency, <a href="https://github.com/Jeffail/benthos">Benthos</a>:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go get github.com/Jeffail/benthos@v2.12.2
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go get github.com/Jeffail/benthos/v3
 <span style="color:#177500"># Look! Now you have more dependencies than friends!</span></code></pre></div>
-<p>That&rsquo;ll automatically add the dep to your <code>go.mod</code> file at the correct commit. The version <code>v2.12.2</code> isn&rsquo;t special it&rsquo;s just the latest at the time of writing this guide, you should probably grab the <a href="https://github.com/Jeffail/benthos/releases">current latest</a>.</p>
-
-<p>Next, you&rsquo;re going to write your stream processor service. Write this to the file <code>main.go</code>:</p>
+<p>That&rsquo;ll automatically add the dep to your <code>go.mod</code> file at the latest v3 tag. Next, you&rsquo;re going to write your stream processor service. Write this to the file <code>main.go</code>:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">package</span> <span style="color:#000">main</span>
 
 <span style="color:#a90d91">import</span> (
-    <span style="color:#c41a16">&#34;github.com/Jeffail/benthos/lib/service&#34;</span>
+    <span style="color:#c41a16">&#34;github.com/Jeffail/benthos/v3/lib/service&#34;</span>
 )
 
 <span style="color:#a90d91">func</span> <span style="color:#000">main</span>() {
