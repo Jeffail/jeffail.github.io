@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Jeffail</title>
@@ -6,11 +6,7 @@
     <description>Recent content in Posts on Jeffail</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 20 Aug 2019 00:00:00 +0100</lastBuildDate>
-    
-	<atom:link href="//www.jeffail.uk/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 20 Aug 2019 00:00:00 +0100</lastBuildDate><atom:link href="//www.jeffail.uk/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Write a Benthos Plugin</title>
       <link>//www.jeffail.uk/post/write-a-benthos-plugin/</link>
@@ -39,17 +35,6 @@ Benthos Lab is a website where users of the Benthos stream processor can write, 
       <guid>//www.jeffail.uk/post/compiling-benthos-to-wasm/</guid>
       <description>Web assembly won&amp;rsquo;t fix seasons 7 and 8, but it&amp;rsquo;s still pretty cool. At a Meltwater hackathon I had a project in mind (details soon to follow) that would benefit hugely from Benthos, a stream processor written in Go, running directly in the browser. I therefore set out to compile it in wasm, this is my short and sweet journey.
 The Build The first thing I did and the first thing you ought to do if you are targeting wasm yourself is skim through this section of the Go wiki.</description>
-    </item>
-    
-    <item>
-      <title>This Is Now a Benthos Blog</title>
-      <link>//www.jeffail.uk/post/this-is-now-a-benthos-blog/</link>
-      <pubDate>Mon, 27 May 2019 12:00:00 +0000</pubDate>
-      
-      <guid>//www.jeffail.uk/post/this-is-now-a-benthos-blog/</guid>
-      <description>As Benthos matures I&amp;rsquo;m increasingly in need of a blog site for announcing and/or justifying my otherwise inexplicable decisions.
-Since this blog is mostly stale due to my commitments to Benthos - or, rather, I have a shinier toy to play with than this site - I think it makes sense for me to merge the two together.
-&amp;ldquo;Why not ditch this trash blog and focus on a pure Benthos blog?</description>
     </item>
     
     <item>

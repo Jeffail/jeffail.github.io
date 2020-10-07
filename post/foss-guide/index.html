@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Ashley Jeffs">
 		<meta name="description" content="This is where I post my junk">
-		<meta name="generator" content="Hugo 0.55.6" />
+		<meta name="generator" content="Hugo 0.76.0" />
 		<title>FOSS: What Will the Community Do to Me? &middot; Jeffail</title>
 		<link rel="shortcut icon" href="//www.jeffail.uk/images/favicon.ico">
 		<link rel="apple-touch-icon" sizes="180x180" href="//www.jeffail.uk/images/apple-touch-icon.png">
@@ -38,6 +38,7 @@
 	
 	<a href='//www.jeffail.uk/about'>About</a>
 	<a href="https://www.github.com/Jeffail">Github</a>
+	<a href="https://www.twitter.com/jeffail">Twitter</a>
 	<a href="https://www.youtube.com/channel/UCjIYEhBrw3GQwpRWe1asufg">Youtube</a>
 
 	
@@ -64,45 +65,33 @@
                 </header>
                 
                 <section id="post-body">
-                    
-
-<p>Open source is a great way to mildly annoy Hacker News, but sometimes
+                    <p>Open source is a great way to mildly annoy Hacker News, but sometimes
 accidentally gives value to someone. With permission from my work here is an
 edited version of a FOSS guide I wrote. You will find an overview of what to
 expect from open sourcing your projects, along with some good practices. This
 was originally intended for teams, but mostly also applies for individuals and
 hobby projects.</p>
-
 <p>Most of the advice here will be common sense, as they are good practices in
 general. Any effort to make your project approachable to strangers is also
 beneficial within an established team.</p>
-
 <h2 id="what-kind-of-work-is-worth-sharing">What kind of work is worth sharing?</h2>
-
 <p>As a collective you have already determined which sections of your codebase are
 critical to your competitive advantage, and therefore must be kept secret.
 Everything else, I would say, is worth sharing in some form.</p>
-
 <p>If you do not believe other developers could gain value from your work then you
 are either wrong or the work isn&rsquo;t valuable to you. Projects that you share do
 not have to be the next Hacker News fad, or explode with stars overnight. You
 are offering some problem solutions that you couldn&rsquo;t find elsewhere, that&rsquo;s all
 that a project needs.</p>
-
 <p>Obviously the world might survive without another FIZZ/BUZZ implementation or
 JavaScript framework. If your work is genuinely already solved elsewhere then
 maybe use this as an opportunity for self reflection, why did you build this
 software in the first place?</p>
-
 <h2 id="what-does-a-foss-project-need">What Does A FOSS Project Need?</h2>
-
 <p>Short answer: All the same stuff as a regular project.</p>
-
 <p>More thorough answer:</p>
-
 <ul>
 <li>A project root README
-
 <ul>
 <li>A concise description of the project purpose and goals.</li>
 <li>List of dependencies</li>
@@ -111,107 +100,82 @@ software in the first place?</p>
 <li>Contact information for the maintainers</li>
 <li>Rules for contributing (link to coding standards etc)</li>
 <li>A license declaration</li>
-</ul></li>
+</ul>
+</li>
 <li>Clean layout
-
 <ul>
 <li>The project should be modular and self contained where possible</li>
 <li>Unit tests with a good standard of code coverage (use best judgement)</li>
-</ul></li>
+</ul>
+</li>
 <li>Well documented code
-
 <ul>
 <li>Comments where appropriate</li>
 <li>README for larger isolated components of your project</li>
 <li>Configuration examples (up to date!)</li>
 <li>Code examples (more in depth than the README)</li>
 <li>Architecture diagrams and high level design documents</li>
-</ul></li>
 </ul>
-
+</li>
+</ul>
 <h2 id="what-will-the-community-do-to-me">What Will The Community Do To Me?</h2>
-
 <p>Your mileage will vary when it comes to interacting with an online community,
 but here are some key themes I discovered across my projects.</p>
-
 <h3 id="initial-reception">Initial Reception</h3>
-
 <p>Most likely the first thing that will happen when your repo goes public is&hellip;
 Nothing. Even when posting your project in various online forums you can expect
 to be met with very little attention.</p>
-
 <p>It is important to understand that this is not a reflection on the project or
 the author, as it takes time for a project to gain momentum. Even if your
 project initially gains lackluster response, it is never more than a single post
 from exploding with attention given the correct circumstances.</p>
-
 <p>Do not let a lukewarm reception drive you away from maintaining your project.</p>
-
 <h3 id="feedback">Feedback</h3>
-
 <p>A natural human reaction to being bombarded with feedback from strangers is
 either being defensive, overcome with woe, or both. You need to keep a clear
 head when reading feedback and remember that this process is meant to help you
 and the project improve, and not a punishment.</p>
-
 <p>It is a great idea to record and respond to all feedback received, but to help
 you stay in control of the flow you should categorise it. I tend to split
 feedback into the following:</p>
-
 <h4 id="technical-issues">Technical Issues</h4>
-
 <p>Bugs and general design problems are the gold you are prospecting. This is an
 actual problem that needs addressing (sooner rather than later). When real
 problems are revealed by the community (sometimes even fixed) make sure you
 thank and credit those people since they have spared you from impending pain and
 suffering.</p>
-
 <h4 id="documentation-issues">Documentation Issues</h4>
-
 <p>Most of the feedback or questions you receive will likely be due to gaps in
 documentation. This also includes a general misunderstanding of your project or
 its goals. If appropriate then use these as opportunities to update and improve
 your READMEs, comments etc.</p>
-
 <p>Genuine and reasonable misunderstanding should be permanently dealt with, don&rsquo;t
 just respond to the individual and move on. However, some people on the internet
 are just trolls or contrarians, make a judgement call.</p>
-
 <h4 id="feature-request">Feature Request</h4>
-
 <p>Take note, some of these are great ideas and should be done, some should be
 rejected, others can be left as an issue with the &ldquo;Help wanted&rdquo; tag. These are
 the hardest to triage and respond to as they require thought and consideration.
 Do your best and be polite.</p>
-
 <h4 id="design-disagreements">Design Disagreements</h4>
-
 <p>If someone has a problem that isn&rsquo;t any of the above then it&rsquo;s probably a design
 disagreement. Not everyone has the same priorities or issues as you do, some
 people will try and shoehorn your project into their problem space.</p>
-
 <p>It&rsquo;s easy to lose significant time to these conversations so try and be
 respectful, but do not be afraid to reject requests and feedback that you don&rsquo;t
 feel will fit the project.</p>
-
 <h4 id="laziness">Laziness</h4>
-
 <p>Be wary of the fabled &ldquo;Lazy Dev&rdquo;, many requests may seem to fall into one of the
 above categories, when they are in fact a thinly veiled attempt to extract code
 examples or bespoke documentation from you.</p>
-
 <p>Politeness is key to all community dialog, but be willing to refer some folk to
 the documentation or codebase when their requests are trivial.</p>
-
 <h4 id="forks">Forks</h4>
-
 <p>People will fork your project. Lots. Github forks are very often used as
 bookmarks. If a high profile organisation forks your project they will likely
 contact you if they intend to do significant work to it. My advice is to ignore
 forks until you see a pull request.</p>
-
 <h2 id="summary">Summary</h2>
-
 <p>Looking after a FOSS project is fun, extremely rewarding, and mostly common
 sense. The key things to get right are politeness, managing your time whilst
 being responsive, and keeping in mind that you aren’t working for the community,
@@ -255,7 +219,7 @@ you are working together.</p>
     
     <p class="small">
     
-       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+       © Copyright 2020 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
     
     </p>
     <p class="small">

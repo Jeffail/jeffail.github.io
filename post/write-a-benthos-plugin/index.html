@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Ashley Jeffs">
 		<meta name="description" content="This is where I post my junk">
-		<meta name="generator" content="Hugo 0.55.6" />
+		<meta name="generator" content="Hugo 0.76.0" />
 		<title>Write a Benthos Plugin &middot; Jeffail</title>
 		<link rel="shortcut icon" href="//www.jeffail.uk/images/favicon.ico">
 		<link rel="apple-touch-icon" sizes="180x180" href="//www.jeffail.uk/images/apple-touch-icon.png">
@@ -38,6 +38,7 @@
 	
 	<a href='//www.jeffail.uk/about'>About</a>
 	<a href="https://www.github.com/Jeffail">Github</a>
+	<a href="https://www.twitter.com/jeffail">Twitter</a>
 	<a href="https://www.youtube.com/channel/UCjIYEhBrw3GQwpRWe1asufg">Youtube</a>
 
 	
@@ -64,47 +65,33 @@
                 </header>
                 
                 <section id="post-body">
-                    
-
-<p>I&rsquo;m going to walk you through writing a <a href="https://www.benthos.dev">Benthos</a> stream processing plugin from scratch in Go. Too lazy to read? You can find a video equivalent of this post at: <a href="https://youtu.be/Ilah_Y0uMk4">https://youtu.be/Ilah_Y0uMk4</a>. If you prefer to dig straight into code then you should check out the <a href="https://github.com/benthosdev/benthos-plugin-example">benthos-plugin-example</a> repo.</p>
-
-<p><img src="/images/write-a-benthos-plugin/benthos-plugged.png" alt="benthos-plugged" /></p>
-
+                    <p>I&rsquo;m going to walk you through writing a <a href="https://www.benthos.dev">Benthos</a> stream processing plugin from scratch in Go. Too lazy to read? You can find a video equivalent of this post at: <a href="https://youtu.be/Ilah_Y0uMk4">https://youtu.be/Ilah_Y0uMk4</a>. If you prefer to dig straight into code then you should check out the <a href="https://github.com/benthosdev/benthos-plugin-example">benthos-plugin-example</a> repo.</p>
+<p><img src="/images/write-a-benthos-plugin/benthos-plugged.png" alt="benthos-plugged"></p>
 <p>Plugins allow you to embed your code within Benthos as a component. <a href="https://docs.benthos.dev/processors">Processors</a> are the most common type of component to get plugged, which is what we&rsquo;re going to do in this post. If you want to run non-Go code from Benthos then you still have options, such as the <a href="https://docs.benthos.dev/processors#subprocess"><code>subprocess</code></a>, <a href="https://docs.benthos.dev/processors#http"><code>http</code></a> or <a href="https://docs.benthos.dev/processors#lambda"><code>lambda</code></a> processors.</p>
-
 <h2 id="roleplay">Roleplay</h2>
-
 <p>Imagine you are a competent engineer. You wrote a function to detect sarcasm in internet posts on a linear scale of 0 to 100:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#177500">// HowSarcastic TOTALLY detects sarcasm EVERY time.
 </span><span style="color:#177500"></span><span style="color:#a90d91">func</span> <span style="color:#000">HowSarcastic</span>(<span style="color:#000">content</span> []<span style="color:#a90d91">byte</span>) <span style="color:#a90d91">float64</span> {
-    <span style="color:#a90d91">if</span> <span style="color:#000">bytes</span>.<span style="color:#000">Contains</span>(<span style="color:#000">content</span>, []<span style="color:#a90d91">byte</span>(<span style="color:#c41a16">&#34;/s&#34;</span>)) {
-        <span style="color:#a90d91">return</span> <span style="color:#1c01ce">100</span>
-    }
-    <span style="color:#a90d91">return</span> <span style="color:#1c01ce">0</span>
-}</code></pre></div>
-<p>You are confident that <code>HowSarcastic</code> is 100% accurate and wish to apply it to a continuous stream of data by deploying it within a stream processing solution.</p>
-
+	<span style="color:#a90d91">if</span> <span style="color:#000">bytes</span>.<span style="color:#000">Contains</span>(<span style="color:#000">content</span>, []<span style="color:#a90d91">byte</span>(<span style="color:#c41a16">&#34;/s&#34;</span>)) {
+		<span style="color:#a90d91">return</span> <span style="color:#1c01ce">100</span>
+	}
+	<span style="color:#a90d91">return</span> <span style="color:#1c01ce">0</span>
+}
+</code></pre></div><p>You are confident that <code>HowSarcastic</code> is 100% accurate and wish to apply it to a continuous stream of data by deploying it within a stream processing solution.</p>
 <p>You want this service to be resilient with at-least-once delivery guarantees, scalable both horizontally and vertically, and able to expose various metrics about the health of the data stream.</p>
-
 <p>You have decided to use Benthos for this service because you love the logo.</p>
-
-<p><img src="/images/write-a-benthos-plugin/blobfish.jpg" alt="charming-benthos-logo" /></p>
-
-<h3 id="stuff-you-don-t-need-to-care-about-yet">Stuff you don&rsquo;t need to care about yet</h3>
-
+<p><img src="/images/write-a-benthos-plugin/blobfish.jpg" alt="charming-benthos-logo"></p>
+<h3 id="stuff-you-dont-need-to-care-about-yet">Stuff you don&rsquo;t need to care about yet</h3>
 <p>Since you are using Benthos you don&rsquo;t need to choose a queue system, metrics aggregator or deployment platform yet, those items can be configured.</p>
-
 <p>You don&rsquo;t even need to know what format the data comes in or how it needs to look when it leaves your service, as Benthos <a href="https://docs.benthos.dev/processors/">has plenty of processors</a> for configuring that stuff on the fly.</p>
-
 <h2 id="getting-started">Getting Started</h2>
-
 <p>You&rsquo;re going to use Go modules for this one, make a directory and create a <code>go.mod</code> file:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mkdir foo <span style="color:#000">&amp;&amp;</span> <span style="color:#a90d91">cd</span> foo
-go mod init github.com/bar/foo</code></pre></div>
-<p>Next, you need to pull in your only dependency, <a href="https://github.com/Jeffail/benthos">Benthos</a>:</p>
+go mod init github.com/bar/foo
+</code></pre></div><p>Next, you need to pull in your only dependency, <a href="https://github.com/Jeffail/benthos">Benthos</a>:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go get github.com/Jeffail/benthos/v3
-<span style="color:#177500"># Look! Now you have more dependencies than friends!</span></code></pre></div>
-<p>That&rsquo;ll automatically add the dep to your <code>go.mod</code> file at the latest v3 tag. Next, you&rsquo;re going to write your stream processor service. Write this to the file <code>main.go</code>:</p>
+<span style="color:#177500"># Look! Now you have more dependencies than friends!</span>
+</code></pre></div><p>That&rsquo;ll automatically add the dep to your <code>go.mod</code> file at the latest v3 tag. Next, you&rsquo;re going to write your stream processor service. Write this to the file <code>main.go</code>:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">package</span> <span style="color:#000">main</span>
 
 <span style="color:#a90d91">import</span> (
@@ -113,42 +100,38 @@ go mod init github.com/bar/foo</code></pre></div>
 
 <span style="color:#a90d91">func</span> <span style="color:#000">main</span>() {
     <span style="color:#000">service</span>.<span style="color:#000">Run</span>()
-}</code></pre></div>
-<p>That&rsquo;s it, you&rsquo;ve got a full Benthos. If you want to verify then you can run it:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go run ./main.go --help</code></pre></div>
-<h2 id="write-your-plugin">Write Your Plugin</h2>
-
+}
+</code></pre></div><p>That&rsquo;s it, you&rsquo;ve got a full Benthos. If you want to verify then you can run it:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go run ./main.go --help
+</code></pre></div><h2 id="write-your-plugin">Write Your Plugin</h2>
 <p>Now you will write the actual plugin that executes your function. Processor plugins implement <a href="https://godoc.org/github.com/Jeffail/benthos/lib/types#Processor"><code>types.Processor</code></a> and have the signature:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">func</span> <span style="color:#000">ProcessMessage</span>(<span style="color:#000">msg</span> <span style="color:#000">types</span>.<span style="color:#000">Message</span>) ([]<span style="color:#000">types</span>.<span style="color:#000">Message</span>, <span style="color:#000">types</span>.<span style="color:#000">Response</span>)</code></pre></div>
-<p>A message can have multiple parts (synonymous with a batch) and we are allowed to return either one or more messages or a response which is either an ack or noack.</p>
-
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">func</span> <span style="color:#000">ProcessMessage</span>(<span style="color:#000">msg</span> <span style="color:#000">types</span>.<span style="color:#000">Message</span>) ([]<span style="color:#000">types</span>.<span style="color:#000">Message</span>, <span style="color:#000">types</span>.<span style="color:#000">Response</span>)
+</code></pre></div><p>A message can have multiple parts (synonymous with a batch) and we are allowed to return either one or more messages or a response which is either an ack or noack.</p>
 <p>A message part has both content and any number of metadata key/value pairs. It is therefore up to you as to whether you modify the contents of messages or whether the sarcasm level is added as metadata.</p>
-
 <p>Thankfully you don&rsquo;t need to make that decision now. Instead, you&rsquo;re going to expose it as a config field and support both. The config field will be called <code>metadata_key</code>, and if left empty the contents of messages will be replaced entirely with the sarcasm level.</p>
-
 <p>There won&rsquo;t be much code needed so for brevity you are going to write this straight into your <code>main.go</code> file:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#177500">// SarcasmProc applies our sarcasm detector to messages.
 </span><span style="color:#177500"></span><span style="color:#a90d91">type</span> <span style="color:#000">SarcasmProc</span> <span style="color:#a90d91">struct</span> {
-    <span style="color:#000">MetadataKey</span> <span style="color:#a90d91">string</span> <span style="color:#c41a16">`json:&#34;metadata_key&#34; yaml:&#34;metadata_key&#34;`</span>
+	<span style="color:#000">MetadataKey</span> <span style="color:#a90d91">string</span> <span style="color:#c41a16">`json:&#34;metadata_key&#34; yaml:&#34;metadata_key&#34;`</span>
 }
 
 <span style="color:#177500">// ProcessMessage returns messages mutated with their sarcasm level.
 </span><span style="color:#177500"></span><span style="color:#a90d91">func</span> (<span style="color:#000">s</span> <span style="color:#000">*</span><span style="color:#000">SarcasmProc</span>) <span style="color:#000">ProcessMessage</span>(<span style="color:#000">msg</span> <span style="color:#000">types</span>.<span style="color:#000">Message</span>) ([]<span style="color:#000">types</span>.<span style="color:#000">Message</span>, <span style="color:#000">types</span>.<span style="color:#000">Response</span>) {
-    <span style="color:#000">newMsg</span> <span style="color:#000">:=</span> <span style="color:#000">msg</span>.<span style="color:#000">Copy</span>()
+	<span style="color:#000">newMsg</span> <span style="color:#000">:=</span> <span style="color:#000">msg</span>.<span style="color:#000">Copy</span>()
 
-    <span style="color:#000">newMsg</span>.<span style="color:#000">Iter</span>(<span style="color:#a90d91">func</span>(<span style="color:#000">i</span> <span style="color:#a90d91">int</span>, <span style="color:#000">p</span> <span style="color:#000">types</span>.<span style="color:#000">Part</span>) <span style="color:#a90d91">error</span> {
-        <span style="color:#000">sarcasm</span> <span style="color:#000">:=</span> <span style="color:#000">HowSarcastic</span>(<span style="color:#000">p</span>.<span style="color:#000">Get</span>())
-        <span style="color:#000">sarcasmStr</span> <span style="color:#000">:=</span> <span style="color:#000">strconv</span>.<span style="color:#000">FormatFloat</span>(<span style="color:#000">sarcasm</span>, <span style="color:#2300ce">&#39;f&#39;</span>, <span style="color:#000">-</span><span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">64</span>)
+	<span style="color:#000">newMsg</span>.<span style="color:#000">Iter</span>(<span style="color:#a90d91">func</span>(<span style="color:#000">i</span> <span style="color:#a90d91">int</span>, <span style="color:#000">p</span> <span style="color:#000">types</span>.<span style="color:#000">Part</span>) <span style="color:#a90d91">error</span> {
+		<span style="color:#000">sarcasm</span> <span style="color:#000">:=</span> <span style="color:#000">HowSarcastic</span>(<span style="color:#000">p</span>.<span style="color:#000">Get</span>())
+		<span style="color:#000">sarcasmStr</span> <span style="color:#000">:=</span> <span style="color:#000">strconv</span>.<span style="color:#000">FormatFloat</span>(<span style="color:#000">sarcasm</span>, <span style="color:#2300ce">&#39;f&#39;</span>, <span style="color:#000">-</span><span style="color:#1c01ce">1</span>, <span style="color:#1c01ce">64</span>)
 
-        <span style="color:#a90d91">if</span> <span style="color:#a90d91">len</span>(<span style="color:#000">s</span>.<span style="color:#000">MetadataKey</span>) &gt; <span style="color:#1c01ce">0</span> {
-            <span style="color:#000">p</span>.<span style="color:#000">Metadata</span>().<span style="color:#000">Set</span>(<span style="color:#000">s</span>.<span style="color:#000">MetadataKey</span>, <span style="color:#000">sarcasmStr</span>)
-        } <span style="color:#a90d91">else</span> {
-            <span style="color:#000">p</span>.<span style="color:#000">Set</span>([]<span style="color:#a90d91">byte</span>(<span style="color:#000">sarcasmStr</span>))
-        }
-        <span style="color:#a90d91">return</span> <span style="color:#a90d91">nil</span>
-    })
+		<span style="color:#a90d91">if</span> <span style="color:#a90d91">len</span>(<span style="color:#000">s</span>.<span style="color:#000">MetadataKey</span>) &gt; <span style="color:#1c01ce">0</span> {
+			<span style="color:#000">p</span>.<span style="color:#000">Metadata</span>().<span style="color:#000">Set</span>(<span style="color:#000">s</span>.<span style="color:#000">MetadataKey</span>, <span style="color:#000">sarcasmStr</span>)
+		} <span style="color:#a90d91">else</span> {
+			<span style="color:#000">p</span>.<span style="color:#000">Set</span>([]<span style="color:#a90d91">byte</span>(<span style="color:#000">sarcasmStr</span>))
+		}
+		<span style="color:#a90d91">return</span> <span style="color:#a90d91">nil</span>
+	})
 
-    <span style="color:#a90d91">return</span> []<span style="color:#000">types</span>.<span style="color:#000">Message</span>{<span style="color:#000">newMsg</span>}, <span style="color:#a90d91">nil</span>
+	<span style="color:#a90d91">return</span> []<span style="color:#000">types</span>.<span style="color:#000">Message</span>{<span style="color:#000">newMsg</span>}, <span style="color:#a90d91">nil</span>
 }
 
 <span style="color:#177500">// CloseAsync does nothing.
@@ -156,123 +139,111 @@ go mod init github.com/bar/foo</code></pre></div>
 
 <span style="color:#177500">// WaitForClose does nothing.
 </span><span style="color:#177500"></span><span style="color:#a90d91">func</span> (<span style="color:#000">s</span> <span style="color:#000">*</span><span style="color:#000">SarcasmProc</span>) <span style="color:#000">WaitForClose</span>(<span style="color:#000">timeout</span> <span style="color:#000">time</span>.<span style="color:#000">Duration</span>) <span style="color:#a90d91">error</span> {
-    <span style="color:#a90d91">return</span> <span style="color:#a90d91">nil</span>
-}</code></pre></div>
-<p>Let&rsquo;s break this down. You have a struct called <code>SarcasmProc</code>, which contains a configuration field <code>MetadataKey</code>. The functions <code>CloseAsync</code> and <code>WaitForClose</code> can be ignored as your processor doesn&rsquo;t contain any state that requires termination.</p>
-
+	<span style="color:#a90d91">return</span> <span style="color:#a90d91">nil</span>
+}
+</code></pre></div><p>Let&rsquo;s break this down. You have a struct called <code>SarcasmProc</code>, which contains a configuration field <code>MetadataKey</code>. The functions <code>CloseAsync</code> and <code>WaitForClose</code> can be ignored as your processor doesn&rsquo;t contain any state that requires termination.</p>
 <p>Within your function <code>ProcessMessage</code> you iterate all the payloads within the message batch and calculate the sarcasm level with your function <code>HowSarcastic</code>. The result is converted into a string and, depending on whether a metadata key has been set, replaces the contents with the result or sets a new metadata value on the payload.</p>
-
 <p>That&rsquo;s your processor completed. Now you need to register the plugin before calling <code>service.Run</code>. Since this is a processor plugin you&rsquo;re going to call <a href="https://godoc.org/github.com/Jeffail/benthos/lib/processor#RegisterPlugin"><code>processor.RegisterPlugin</code></a>:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">func</span> <span style="color:#000">main</span>() {
-    <span style="color:#000">processor</span>.<span style="color:#000">RegisterPlugin</span>(
-        <span style="color:#c41a16">&#34;how_sarcastic&#34;</span>,
-        <span style="color:#a90d91">func</span>() <span style="color:#a90d91">interface</span>{} {
-            <span style="color:#000">s</span> <span style="color:#000">:=</span> <span style="color:#000">SarcasmProc</span>{}
-            <span style="color:#a90d91">return</span> <span style="color:#000">&amp;</span><span style="color:#000">s</span>
-        },
-        <span style="color:#a90d91">func</span>(
-            <span style="color:#000">iconf</span> <span style="color:#a90d91">interface</span>{},
-            <span style="color:#000">mgr</span> <span style="color:#000">types</span>.<span style="color:#000">Manager</span>,
-            <span style="color:#000">logger</span> <span style="color:#000">log</span>.<span style="color:#000">Modular</span>,
-            <span style="color:#000">stats</span> <span style="color:#000">metrics</span>.<span style="color:#000">Type</span>,
-        ) (<span style="color:#000">types</span>.<span style="color:#000">Processor</span>, <span style="color:#a90d91">error</span>) {
-            <span style="color:#a90d91">return</span> <span style="color:#000">iconf</span>.(<span style="color:#000">*</span><span style="color:#000">SarcasmProc</span>), <span style="color:#a90d91">nil</span>
-        },
-    )
+	<span style="color:#000">processor</span>.<span style="color:#000">RegisterPlugin</span>(
+		<span style="color:#c41a16">&#34;how_sarcastic&#34;</span>,
+		<span style="color:#a90d91">func</span>() <span style="color:#a90d91">interface</span>{} {
+			<span style="color:#000">s</span> <span style="color:#000">:=</span> <span style="color:#000">SarcasmProc</span>{}
+			<span style="color:#a90d91">return</span> <span style="color:#000">&amp;</span><span style="color:#000">s</span>
+		},
+		<span style="color:#a90d91">func</span>(
+			<span style="color:#000">iconf</span> <span style="color:#a90d91">interface</span>{},
+			<span style="color:#000">mgr</span> <span style="color:#000">types</span>.<span style="color:#000">Manager</span>,
+			<span style="color:#000">logger</span> <span style="color:#000">log</span>.<span style="color:#000">Modular</span>,
+			<span style="color:#000">stats</span> <span style="color:#000">metrics</span>.<span style="color:#000">Type</span>,
+		) (<span style="color:#000">types</span>.<span style="color:#000">Processor</span>, <span style="color:#a90d91">error</span>) {
+			<span style="color:#a90d91">return</span> <span style="color:#000">iconf</span>.(<span style="color:#000">*</span><span style="color:#000">SarcasmProc</span>), <span style="color:#a90d91">nil</span>
+		},
+	)
 
-    <span style="color:#000">service</span>.<span style="color:#000">Run</span>()
-}</code></pre></div>
-<p>The first argument is a string that identifies the type of this plugin, that&rsquo;s the string used to specify it within a Benthos config file.</p>
-
+	<span style="color:#000">service</span>.<span style="color:#000">Run</span>()
+}
+</code></pre></div><p>The first argument is a string that identifies the type of this plugin, that&rsquo;s the string used to specify it within a Benthos config file.</p>
 <p>The second argument is a function that creates our config structure, this will be embedded within the Benthos config specification. In this case our processor implementation is the same type as the configuration struct, but you can separate them if you prefer.</p>
-
 <p>The third argument is the generic function that constructs our processor. In this case we&rsquo;ve already constructed it as our configuration type and so we can simply cast it and return it.</p>
-
 <p>You can download the full file here: <a href="/snippets/write-a-benthos-plugin/main.go"><code>main.go</code></a></p>
-
 <p>Now you&rsquo;re going to build your custom Benthos with:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go build -o benthos</code></pre></div>
-<h2 id="run-your-plugin">Run Your Plugin</h2>
-
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">go build -o benthos
+</code></pre></div><h2 id="run-your-plugin">Run Your Plugin</h2>
 <p>In order to execute your plugin with Benthos you need a config. Write the following to a file <code>config.yaml</code>:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">pipeline:
-  processors:
-  - type: how_sarcastic</code></pre></div>
-<p>And run it:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">./benthos -c ./config.yaml</code></pre></div>
-<p>Your config hasn&rsquo;t specified an input or output so they will default to <code>stdin</code> and <code>stdout</code>. Write the line <code>'this is not sarcastic'</code>, followed by the line <code>'this is sarcastic /s'</code>. Benthos should print <code>0</code> and <code>100</code> respectively.</p>
-
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">pipeline</span>:
+  <span style="color:#000">processors</span>:
+  - <span style="color:#000">type</span>: <span style="color:#1c01ce">how_sarcastic</span>
+</code></pre></div><p>And run it:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">./benthos -c ./config.yaml
+</code></pre></div><p>Your config hasn&rsquo;t specified an input or output so they will default to <code>stdin</code> and <code>stdout</code>. Write the line <code>'this is not sarcastic'</code>, followed by the line <code>'this is sarcastic /s'</code>. Benthos should print <code>0</code> and <code>100</code> respectively.</p>
 <p>Cool, but this config is pretty useless, good job idiot. Now you&rsquo;re going to fix your mistake. Let&rsquo;s imagine you are processing a stream of JSON documents of the form <code>{&quot;id&quot;:&quot;fooid&quot;,&quot;content&quot;:&quot;this is the content&quot;}</code> and you want to add a field <code>sarcasm</code> containing the sarcasm level of <code>content</code>. You can do that purely through config by using the <a href="https://docs.benthos.dev/processors#json"><code>json</code></a> and <a href="https://docs.benthos.dev/processors#process_field"><code>process_field</code></a> processors:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">pipeline:
-  processors:
-  - json:
-      operator: copy
-      path: content
-      value: sarcasm
-  - process_field:
-      path: sarcasm
-      result_type: float
-      processors:
-      - type: how_sarcastic</code></pre></div>
-<p>Run that config with some JSON documents:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">pipeline</span>:
+  <span style="color:#000">processors</span>:
+  - <span style="color:#000">json</span>:
+      <span style="color:#000">operator</span>: <span style="color:#1c01ce">copy</span>
+      <span style="color:#000">path</span>: <span style="color:#1c01ce">content</span>
+      <span style="color:#000">value</span>: <span style="color:#1c01ce">sarcasm</span>
+  - <span style="color:#000">process_field</span>:
+      <span style="color:#000">path</span>: <span style="color:#1c01ce">sarcasm</span>
+      <span style="color:#000">result_type</span>: <span style="color:#1c01ce">float</span>
+      <span style="color:#000">processors</span>:
+      - <span style="color:#000">type</span>: <span style="color:#1c01ce">how_sarcastic</span>
+</code></pre></div><p>Run that config with some JSON documents:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#a90d91">echo</span> <span style="color:#c41a16">&#39;{&#34;id&#34;:&#34;foo1&#34;,&#34;content&#34;:&#34;this is totally sarcastic /s&#34;}
 </span><span style="color:#c41a16">  {&#34;id&#34;:&#34;foo2&#34;,&#34;content&#34;:&#34;but this isnt sarcastic at all&#34;}&#39;</span> |
-  ./benthos -c ./config.yaml</code></pre></div>
-<p>You&rsquo;ll see some log events but also you should see your two modified documents:</p>
+  ./benthos -c ./config.yaml
+</code></pre></div><p>You&rsquo;ll see some log events but also you should see your two modified documents:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">{&#34;content&#34;:&#34;this is totally sarcastic /s&#34;,&#34;id&#34;:&#34;foo1&#34;,&#34;sarcasm&#34;:100}
-{&#34;content&#34;:&#34;but this isnt sarcastic at all&#34;,&#34;id&#34;:&#34;foo2&#34;,&#34;sarcasm&#34;:0}</code></pre></div>
-<p>That&rsquo;s much more useful, but this is just barely scratching the surface of what Benthos can do. For example, here&rsquo;s a config that calculates sarcasm with your processor and removes anything with a sarcasm level at or above 80:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">pipeline:
-  processors:
-  - type: how_sarcastic
-    plugin:
-      metadata_key: sarcasm
-  - filter_parts:
-      metadata:
-        operator: less_than
-        key: sarcasm
-        arg: <span style="color:#1c01ce">80</span></code></pre></div>
-<p>Note that it makes use of your <code>metadata_key</code> field in order to filter the documents without changing their content.</p>
-
+{&#34;content&#34;:&#34;but this isnt sarcastic at all&#34;,&#34;id&#34;:&#34;foo2&#34;,&#34;sarcasm&#34;:0}
+</code></pre></div><p>That&rsquo;s much more useful, but this is just barely scratching the surface of what Benthos can do. For example, here&rsquo;s a config that calculates sarcasm with your processor and removes anything with a sarcasm level at or above 80:</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">pipeline</span>:
+  <span style="color:#000">processors</span>:
+  - <span style="color:#000">type</span>: <span style="color:#1c01ce">how_sarcastic</span>
+    <span style="color:#000">plugin</span>:
+      <span style="color:#000">metadata_key</span>: <span style="color:#1c01ce">sarcasm</span>
+  - <span style="color:#000">filter_parts</span>:
+      <span style="color:#000">metadata</span>:
+        <span style="color:#000">operator</span>: <span style="color:#1c01ce">less_than</span>
+        <span style="color:#000">key</span>: <span style="color:#1c01ce">sarcasm</span>
+        <span style="color:#000">arg</span>: <span style="color:#1c01ce">80</span>
+</code></pre></div><p>Note that it makes use of your <code>metadata_key</code> field in order to filter the documents without changing their content.</p>
 <p>Try experimenting with other Benthos processors, you can find the documentation at <a href="https://docs.benthos.dev/processors/">docs.benthos.dev/processors</a>.</p>
-
 <h2 id="next-steps">Next Steps</h2>
-
 <p>After playing around with Benthos processors you should check out the various <a href="https://docs.benthos.dev/inputs/">inputs</a>, <a href="https://docs.benthos.dev/inputs/">outputs</a>, <a href="https://docs.benthos.dev/metrics/">metrics aggregators</a> and <a href="https://docs.benthos.dev/tracers/">tracers</a> that it&rsquo;s able to hook up with.</p>
-
 <p>For example, here&rsquo;s a modified version of the previous config where we write from Kafka to an S3 bucket, sending our metrics to Prometheus:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">http:
-  address: <span style="color:#1c01ce">0.0</span>.<span style="color:#1c01ce">0.0</span>:<span style="color:#1c01ce">4195</span>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">http</span>:
+  <span style="color:#000">address</span>: <span style="color:#1c01ce">0.0.0.0</span>:<span style="color:#1c01ce">4195</span>
 
-input:
-  kafka_balanced:
-    addresses:
-    - localhost:<span style="color:#1c01ce">9092</span>
-    consumer_group: foo_consumer_group
-    topics:
-    - foo_stream
+<span style="color:#000">input</span>:
+  <span style="color:#000">kafka_balanced</span>:
+    <span style="color:#000">addresses</span>:
+    - <span style="color:#1c01ce">localhost:9092</span>
+    <span style="color:#000">consumer_group</span>: <span style="color:#1c01ce">foo_consumer_group</span>
+    <span style="color:#000">topics</span>:
+    - <span style="color:#1c01ce">foo_stream</span>
 
-pipeline:
-  processors:
-  - type: how_sarcastic
-    plugin:
-      metadata_key: sarcasm
-  - filter_parts:
-      metadata:
-        operator: less_than
-        key: sarcasm
-        arg: <span style="color:#1c01ce">80</span>
+<span style="color:#000">pipeline</span>:
+  <span style="color:#000">processors</span>:
+  - <span style="color:#000">type</span>: <span style="color:#1c01ce">how_sarcastic</span>
+    <span style="color:#000">plugin</span>:
+      <span style="color:#000">metadata_key</span>: <span style="color:#1c01ce">sarcasm</span>
+  - <span style="color:#000">filter_parts</span>:
+      <span style="color:#000">metadata</span>:
+        <span style="color:#000">operator</span>: <span style="color:#1c01ce">less_than</span>
+        <span style="color:#000">key</span>: <span style="color:#1c01ce">sarcasm</span>
+        <span style="color:#000">arg</span>: <span style="color:#1c01ce">80</span>
 
-output:
-  s3:
-    bucket: foo_bucket
-    content_type: application/json
-    path: ${!metadata:kafka_key}-${!timestamp_unix_nano}-${!count:files}.json
+<span style="color:#000">output</span>:
+  <span style="color:#000">s3</span>:
+    <span style="color:#000">bucket</span>: <span style="color:#1c01ce">foo_bucket</span>
+    <span style="color:#000">content_type</span>: <span style="color:#1c01ce">application/json</span>
+    <span style="color:#000">path</span>: <span style="color:#1c01ce">${!metadata:kafka_key}-${!timestamp_unix_nano}-${!count:files}.json</span>
 
-metrics:
+<span style="color:#000">metrics</span>:
   <span style="color:#177500"># Endpoint hosted at both :4195/stats and :4195/metrics</span>
-  type: prometheus</code></pre></div>
-<p>I&rsquo;m sure you&rsquo;ll make great use of Benthos plugins with your extremely important work /s.</p>
+  <span style="color:#000">type</span>: <span style="color:#1c01ce">prometheus</span>
+</code></pre></div><p>I&rsquo;m sure you&rsquo;ll make great use of Benthos plugins with your extremely important work /s.</p>
 
                 </section>
             </article>
@@ -312,7 +283,7 @@ metrics:
     
     <p class="small">
     
-       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+       © Copyright 2020 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
     
     </p>
     <p class="small">

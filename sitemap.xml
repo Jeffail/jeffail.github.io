@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
     <loc>//www.jeffail.uk/</loc>
     <lastmod>2019-08-20T00:00:00+01:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>//www.jeffail.uk/post/</loc>
     <lastmod>2019-08-20T00:00:00+01:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -27,11 +25,6 @@
   <url>
     <loc>//www.jeffail.uk/post/compiling-benthos-to-wasm/</loc>
     <lastmod>2019-05-27T12:00:01+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>//www.jeffail.uk/post/this-is-now-a-benthos-blog/</loc>
-    <lastmod>2019-05-27T12:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -71,7 +64,6 @@
   
   <url>
     <loc>//www.jeffail.uk/categories/</loc>
-    <priority>0</priority>
   </url>
   
 </urlset>

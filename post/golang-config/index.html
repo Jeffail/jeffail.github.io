@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Ashley Jeffs">
 		<meta name="description" content="This is where I post my junk">
-		<meta name="generator" content="Hugo 0.55.6" />
+		<meta name="generator" content="Hugo 0.76.0" />
 		<title>Golang Service Configuration &middot; Jeffail</title>
 		<link rel="shortcut icon" href="//www.jeffail.uk/images/favicon.ico">
 		<link rel="apple-touch-icon" sizes="180x180" href="//www.jeffail.uk/images/apple-touch-icon.png">
@@ -38,6 +38,7 @@
 	
 	<a href='//www.jeffail.uk/about'>About</a>
 	<a href="https://www.github.com/Jeffail">Github</a>
+	<a href="https://www.twitter.com/jeffail">Twitter</a>
 	<a href="https://www.youtube.com/channel/UCjIYEhBrw3GQwpRWe1asufg">Youtube</a>
 
 	
@@ -65,7 +66,6 @@
                 
                 <section id="post-body">
                     <p>Rob Pike wrote an interesting blog about API options, it can be found <a href="http://commandcenter.blogspot.nl/2014/01/self-referential-functions-and-design.html">here</a>. It&rsquo;s worth a read, but the summary is that it&rsquo;s a damn fine idea to design options as a variadic argument of configuring functors.</p>
-
 <p>Dave Cheney presented a nice summary of the pros and cons of this versus other approaches (can be read <a href="http://dave.cheney.net/tag/functional-options">here</a>), and a nice example he gave of what it might look like is this:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">func</span> <span style="color:#000">NewServer</span>(<span style="color:#000">addr</span> <span style="color:#a90d91">string</span>, <span style="color:#000">options</span> <span style="color:#000">...</span><span style="color:#a90d91">func</span>(<span style="color:#000">*</span><span style="color:#000">Server</span>)) (<span style="color:#000">*</span><span style="color:#000">Server</span>, <span style="color:#a90d91">error</span>)
 
@@ -83,24 +83,17 @@
 
 	<span style="color:#177500">// listen securely with a 60 second timeout
 </span><span style="color:#177500"></span>	<span style="color:#000">src2</span>, <span style="color:#000">_</span> <span style="color:#000">:=</span> <span style="color:#000">NewServer</span>(<span style="color:#c41a16">&#34;localhost&#34;</span>, <span style="color:#000">timeout</span>, <span style="color:#000">tls</span>)
-}</code></pre></div>
-<p>This pattern gives users of an API a simple syntax for expressing function options, but simultaneously allows the author of the API to dodge the problem of ambiguous zero values vs defaults, and also the ability to expand options without regression.</p>
-
+}
+</code></pre></div><p>This pattern gives users of an API a simple syntax for expressing function options, but simultaneously allows the author of the API to dodge the problem of ambiguous zero values vs defaults, and also the ability to expand options without regression.</p>
 <p>I love this methodology, but whilst working on web services I&rsquo;ve been thinking a lot about configuration. When building a service it&rsquo;s nice to treat various modular components as an API in itself, but the options for these components often match 1:1 with service configuration values. I therefore wanted to try and merge the two concepts to avoid duplication, this added the following requirements to my options solution:</p>
-
 <ul>
 <li>Individual component options can be aggregated into a single construct</li>
 <li>Easy to serialize/de-serialize all-encompassing construct</li>
 </ul>
-
 <p>The first requirement is self explanatory. I want to define my options once and at the component level, but I want to treat my overall system configuration as one unit.</p>
-
 <p>The second requirement includes de-serialization, which is easy to justify since we need to be able to read our configuration. Serialization will also give us a way of self documenting all configuration options at run time, allowing us to print our values before reading a configuration file (to show defaults) or afterwards to reveal any mistakes in a users config file.</p>
-
 <p>Both of these requirements are easily satisfied with struct based options, but, as Dave Cheney rightfully pointed out, they carry issues of comparing intentional values vs zero values (is an empty string indicating the user wants the default option?) and the API usage can become long winded for the most simple use case (all default values).</p>
-
 <p>My solution isn&rsquo;t well suited for writing libraries, but for services I solved this problem by adding a function definition to every component that has an options struct, which returns an options object fully populated with default values.</p>
-
 <p>To use a component you now generate a default options object, modify any fields of interest and then pass it on. The code looks like this:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#000">fooOptions</span> <span style="color:#000">:=</span> <span style="color:#000">foo</span>.<span style="color:#000">NewOptions</span>()
 <span style="color:#000">fooOptions</span>.<span style="color:#000">Thing</span> = <span style="color:#c41a16">&#34;hello&#34;</span>
@@ -110,8 +103,8 @@
 
 <span style="color:#177500">// When using only default values:
 </span><span style="color:#177500"></span>
-<span style="color:#000">bar2</span> <span style="color:#000">:=</span> <span style="color:#000">foo</span>.<span style="color:#000">New</span>(<span style="color:#000">foo</span>.<span style="color:#000">NewOptions</span>())</code></pre></div>
-<p>Defining our Foo looks like this:</p>
+<span style="color:#000">bar2</span> <span style="color:#000">:=</span> <span style="color:#000">foo</span>.<span style="color:#000">New</span>(<span style="color:#000">foo</span>.<span style="color:#000">NewOptions</span>())
+</code></pre></div><p>Defining our Foo looks like this:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#177500">// Options - options for our foo
 </span><span style="color:#177500"></span><span style="color:#a90d91">type</span> <span style="color:#000">Options</span> {
 	<span style="color:#000">Thing</span>      <span style="color:#a90d91">string</span>      <span style="color:#c41a16">`json:&#34;thing&#34;`</span>
@@ -140,9 +133,8 @@
 		<span style="color:#000">options</span>: <span style="color:#000">options</span>,
 		<span style="color:#000">bar</span>:     <span style="color:#000">bar</span>.<span style="color:#000">New</span>(<span style="color:#000">options</span>.<span style="color:#000">Bar</span>),
 	}
-}</code></pre></div>
-<p>Take note that since we&rsquo;re using structs we can easily nest options within the options of a parent object, this hierarchy also gives you the ability to intuitively separate options for an object type based on its lineage (you might have two SQL CRUD objects for two different areas of your code base for example).</p>
-
+}
+</code></pre></div><p>Take note that since we&rsquo;re using structs we can easily nest options within the options of a parent object, this hierarchy also gives you the ability to intuitively separate options for an object type based on its lineage (you might have two SQL CRUD objects for two different areas of your code base for example).</p>
 <p>This adds one extra step to defining your options, but solves our problem. Your main function for your service might look like this:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a90d91">type</span> <span style="color:#000">serviceOptions</span> <span style="color:#a90d91">struct</span> {
 	<span style="color:#000">ThingOne</span>   <span style="color:#000">foo</span>.<span style="color:#000">Options</span> <span style="color:#c41a16">`json:&#34;thing_one&#34;`</span>
@@ -178,8 +170,8 @@
 	<span style="color:#a90d91">go</span> <span style="color:#000">c2</span>.<span style="color:#000">Run</span>()
 
 	<span style="color:#000">c3</span>.<span style="color:#000">Run</span>()
-}</code></pre></div>
-<p>This solution falls short in that it isn&rsquo;t intuitive to someone picking up a library for the first time, as a natural assumption from the method signature is to use <code>bar := foo.New(foo.Options{})</code>, which is why I would only recommend this for use inside of services where it can be mandated as a common, familiar approach.</p>
+}
+</code></pre></div><p>This solution falls short in that it isn&rsquo;t intuitive to someone picking up a library for the first time, as a natural assumption from the method signature is to use <code>bar := foo.New(foo.Options{})</code>, which is why I would only recommend this for use inside of services where it can be mandated as a common, familiar approach.</p>
                 </section>
             </article>
 
@@ -218,7 +210,7 @@
     
     <p class="small">
     
-       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+       © Copyright 2020 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
     
     </p>
     <p class="small">
