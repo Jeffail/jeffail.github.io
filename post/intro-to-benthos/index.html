@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="author" content="Ashley Jeffs">
 		<meta name="description" content="This is where I post my junk">
-		<meta name="generator" content="Hugo 0.76.0" />
+		<meta name="generator" content="Hugo 0.88.1" />
 		<title>Intro to Benthos &middot; Jeffail</title>
 		<link rel="shortcut icon" href="//www.jeffail.uk/images/favicon.ico">
 		<link rel="apple-touch-icon" sizes="180x180" href="//www.jeffail.uk/images/apple-touch-icon.png">
@@ -103,7 +103,7 @@ draw it in a png file, and host it on this blog:</p>
 <p>The configuration file for Benthos also follows this simple three part model of
 input, buffer and output. You can print a full list of inputs, outputs and
 buffer options, along with documentation, with:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos --list-inputs --list-buffers --list-outputs | less
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos --list-inputs --list-buffers --list-outputs | less
 </code></pre></div><h2 id="discoverableconfiguration">Discoverable Configuration</h2>
 <p>Configuration sucks, both for developers and users. However, Benthos has too
 many options for flags to be viable. To make life easier Benthos has the ability
@@ -113,7 +113,7 @@ with <code>benthos --print-yaml</code> or <code>benthos --print-json</code>.</p>
 with multiple options has those options listed as sibling fields. The sibling
 fields are objects containing any unique fields for that particular option.</p>
 <p>For example, let&rsquo;s take a look at a snippet of the &ldquo;input&rdquo; config:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
   <span style="color:#000">type</span>: <span style="color:#1c01ce">http_server</span>
   <span style="color:#000">http_server</span>:
     <span style="color:#000">address</span>: <span style="color:#1c01ce">localhost:80</span>
@@ -129,7 +129,7 @@ fields are objects containing any unique fields for that particular option.</p>
 <h2 id="using-benthos-http-to-stdout">Using Benthos: HTTP to stdout</h2>
 <p>As a quick demo let&rsquo;s print HTTP POST requests to stdout. Create a file called
 &ldquo;http_to_stdout.yaml&rdquo; and write to it the following:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
   <span style="color:#000">type</span>: <span style="color:#1c01ce">http_server</span>
   <span style="color:#000">http_server</span>:
     <span style="color:#000">address</span>: <span style="color:#1c01ce">localhost:8080</span>
@@ -137,14 +137,14 @@ fields are objects containing any unique fields for that particular option.</p>
 </code></pre></div><p>We can leave out the entire <code>buffer</code> and <code>output</code> sections as we are using the
 defaults anyway. Change the values for <code>address</code> and <code>path</code> at your leisure.</p>
 <p>Run this config with:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml
 </code></pre></div><p>You&rsquo;ll see some log printed to stderr (this would normally print to stdout, but
 an exception is made when the output is stdout.) Benthos is now listening for
 messages. You can test it by sending text with curl:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#c41a16">&#34;hello world&#34;</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#c41a16">&#34;hello world&#34;</span>
 </code></pre></div><p>You should see it on the stdout pipe from Benthos. If at any point you suspect
 your config might be formatted incorrectly you can do a sanity check with:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml --print-yaml | less
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">benthos -c ./http_to_stdout.yaml --print-yaml | less
 </code></pre></div><p>Which will parse your config and print the full result.</p>
 <h2 id="multiple-inputsoutputs">Multiple Inputs/Outputs</h2>
 <p>When you print a config you might notice some odd input and output options
@@ -155,7 +155,7 @@ certain arrangement.</p>
 this let&rsquo;s build the previous example with the added ability to also read stdin.</p>
 <p>Our config input type will now be &ldquo;fan_in&rdquo;, the only config field for this type
 is &ldquo;inputs&rdquo;, which is an array of input config objects, one for each input:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
   <span style="color:#000">type</span>: <span style="color:#1c01ce">fan_in</span>
   <span style="color:#000">fan_in</span>:
     <span style="color:#000">inputs</span>:
@@ -166,9 +166,9 @@ is &ldquo;inputs&rdquo;, which is an array of input config objects, one for each
     - <span style="color:#000">type</span>: <span style="color:#1c01ce">stdin</span>
 </code></pre></div><p>Here we have specified two inputs: &ldquo;http_server&rdquo; and &ldquo;stdin&rdquo;. Run it with some
 text piped to stdin:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#a90d91">echo</span> <span style="color:#c41a16">&#34;via stdin&#34;</span> | benthos -c ./http_to_stdout.yaml
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#a90d91">echo</span> <span style="color:#c41a16">&#34;via stdin&#34;</span> | benthos -c ./http_to_stdout.yaml
 </code></pre></div><p>And also send some text using curl like last time:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#c41a16">&#34;via HTTP POST&#34;</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://localhost:8080/post -d <span style="color:#c41a16">&#34;via HTTP POST&#34;</span>
 </code></pre></div><p>And you should see both &ldquo;via stdin&rdquo; and &ldquo;via HTTP POST&rdquo; from Benthos. Sorry if
 it didn&rsquo;t work I&rsquo;m not good with computers.</p>
 <h3 id="hot-tip">Hot Tip</h3>
@@ -176,7 +176,7 @@ it didn&rsquo;t work I&rsquo;m not good with computers.</p>
 are similar. To save you some effort there is a special &ldquo;ditto&rdquo; type, which
 copies the previous config and overlays any changes.</p>
 <p>For example, say we are reading from kafka partitions 0, 1 and 2:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
   <span style="color:#000">type</span>: <span style="color:#1c01ce">fan_in</span>
   <span style="color:#000">fan_in</span>:
     <span style="color:#000">inputs</span>:
@@ -199,7 +199,7 @@ the topic &ldquo;my_data_stream&rdquo; and the consumer group &ldquo;super_cool_
 <p>Let&rsquo;s imagine that we had a service <code>foo</code> which reads messages from a ZMQ pull
 socket. We then decided to introduce Kafka before <code>foo</code>, and as a bridge we
 deployed Benthos with this config:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
   <span style="color:#000">type</span>: <span style="color:#1c01ce">kafka</span>
   <span style="color:#000">kafka</span>:
     <span style="color:#000">addresses</span>:
@@ -220,7 +220,7 @@ deployed Benthos with this config:</p>
 system by injecting messages before <code>foo</code>. This should be easy to perform from
 scripts and avoid dirtying up our Kafka logs. A small change to our previous
 config lets us do this with Benthos and HTTP:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000">input</span>:
   <span style="color:#000">type</span>: <span style="color:#1c01ce">fan_in</span>
   <span style="color:#000">fan_in</span>:
     <span style="color:#000">inputs</span>:
@@ -246,7 +246,7 @@ config lets us do this with Benthos and HTTP:</p>
     <span style="color:#000">socket_type</span>: <span style="color:#1c01ce">PUSH</span>
 </code></pre></div><p>Without losing any of our previous functionality we can now inject messages into
 our <code>foo</code> with any tool that supports HTTP. For example, with curl:</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://benthos_foo_1:8080/inject -d <span style="color:#c41a16">&#34;{mangled_json:+++}&#34;</span> <span style="color:#000">||</span> alert_ops
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://benthos_foo_1:8080/inject -d <span style="color:#c41a16">&#34;{mangled_json:+++}&#34;</span> <span style="color:#000">||</span> alert_ops
 </code></pre></div><h2 id="conclusion">Conclusion</h2>
 <p>The perfect platform architecture doesn&rsquo;t need Benthos. However:</p>
 <ul>
@@ -295,7 +295,7 @@ our <code>foo</code> with any tool that supports HTTP. For example, with curl:</
     
     <p class="small">
     
-       © Copyright 2020 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
+       © Copyright 2021 <i class="fa fa-heart" aria-hidden="true"></i> Ashley Jeffs
     
     </p>
     <p class="small">
@@ -309,21 +309,6 @@ our <code>foo</code> with any tool that supports HTTP. For example, with curl:</
 <script src="//www.jeffail.uk/js/main.js"></script>
 
 
-
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-135959729-2', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
 
 
 

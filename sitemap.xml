@@ -1,69 +1,43 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>//www.jeffail.uk/</loc>
     <lastmod>2019-08-20T00:00:00+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/</loc>
     <lastmod>2019-08-20T00:00:00+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/write-a-benthos-plugin/</loc>
     <lastmod>2019-08-20T00:00:00+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/introducing-benthos-lab/</loc>
     <lastmod>2019-06-17T00:00:00+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/compiling-benthos-to-wasm/</loc>
     <lastmod>2019-05-27T12:00:01+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/bland-platforms-message-reliability/</loc>
     <lastmod>2017-12-09T13:48:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/intro-to-benthos/</loc>
     <lastmod>2016-10-17T20:09:45+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/foss-guide/</loc>
     <lastmod>2016-10-07T19:17:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/about/</loc>
     <lastmod>2016-10-07T14:02:37+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/tags/</loc>
     <lastmod>2015-06-20T14:02:37+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/golang-config/</loc>
     <lastmod>2015-01-07T12:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/post/teaching-teens/</loc>
     <lastmod>2014-04-28T12:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>//www.jeffail.uk/categories/</loc>
   </url>
-  
 </urlset>
